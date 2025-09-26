@@ -3,321 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autorización de Uso de Imagen - StellaPhotography</title>
-    
-    <!-- Librerías para generar el PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+    <title>AUTORIZACIÓN DE USO DE IMAGEN</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: #f4f4f9;
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            box-sizing: border-box;
-            overflow: hidden; /* Para que los bordes redondeados se apliquen bien */
+            padding: 20px;
         }
         
-        /* Esta es la sección que se convertirá en PDF */
-        #pdf-content {
-            padding: 25px;
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
         }
-
+        
         .header {
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 25px;
             text-align: center;
-            margin-bottom: 20px;
         }
-
-        .header img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #e0e0e0;
-        }
-
+        
         .header h1 {
-            margin: 10px 0 5px;
-            font-size: 1.8em;
-            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 5px;
         }
-
+        
         .header p {
-            margin: 0;
-            color: #777;
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
-
+        
+        .form-container {
+            padding: 30px;
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
-
-        .form-group label {
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+        }
+        
+        .form-col {
+            flex: 1;
+            min-width: 200px;
+            padding: 0 10px;
+        }
+        
+        label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #555;
+            color: #333;
         }
-
-        .form-group input[type="text"],
-        .form-group input[type="email"],
-        .form-group input[type="tel"],
-        .form-group input[type="date"] {
+        
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"],
+        input[type="date"] {
             width: 100%;
             padding: 12px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1em;
+            font-size: 16px;
+            transition: border-color 0.3s;
         }
         
-        .consent-options { display: flex; gap: 20px; }
-        .consent-options label { font-weight: normal; }
+        input:focus {
+            border-color: #2575fc;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.2);
+        }
         
-        #signature-pad {
-            border: 2px dashed #ccc;
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 8px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .signature-container {
+            border: 1px solid #ddd;
             border-radius: 8px;
-            cursor: crosshair;
+            height: 200px;
+            background-color: #f9f9f9;
+            position: relative;
+            margin-bottom: 10px;
             touch-action: none;
         }
         
-        #clear-signature {
-            display: block;
-            margin: 10px auto 0;
-            background: #f0ad4e;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .minor-section {
-            border-top: 1px solid #eee;
-            margin-top: 25px;
-            padding-top: 15px;
-        }
-        
-        .minor-section h3 { margin-top: 0; font-size: 1.1em; color: #444; }
-
-        .button-container {
-            padding: 25px;
-            background-color: #f9f9f9;
-            border-top: 1px solid #eee;
-        }
-        
-        #generate-pdf-btn {
-            display: block;
+        #signature-pad {
             width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            background-color: #d9534f;
-            color: #fff;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            height: 100%;
+            background-color: white;
         }
-
-        #generate-pdf-btn:disabled {
-            background-color: #aaa;
-            cursor: not-allowed;
+        
+        .signature-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-clear {
+            background-color: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-clear:hover {
+            background-color: #ff5252;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-email {
+            background-color: #0078d4;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-whatsapp:hover {
+            background-color: #128C7E;
+        }
+        
+        .btn-email:hover {
+            background-color: #106EBE;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .logo h2 {
+            color: #2575fc;
+            font-size: 1.5rem;
+        }
+        
+        .logo p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+        
+        @media (max-width: 600px) {
+            .form-col {
+                min-width: 100%;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <div id="pdf-content">
-            <div class="header">
-                <img src="https://i.imgur.com/nBi14aC.png" alt="Logo de StellaPhotography">
-                <h1>Autorización de Uso de Imagen</h1>
-                <p>StellaPhotography - Las Piedras, PR</p>
-                <p>Tel. 939-282-1166</p>
-            </div>
-
-            <form id="image-release-form">
-                <p>Yo, <span id="client-name-preview" style="font-weight: bold;">[Nombre del Cliente]</span>, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.</p>
-                
-                <div class="form-group consent-options">
-                    <label><input type="radio" name="consent" value="Sí" checked> Sí, autorizo el uso de mi imagen.</label>
-                    <label><input type="radio" name="consent" value="No"> No, no autorizo.</label>
-                </div>
-
-                <div class="form-group">
-                    <label for="client-name">Nombre del Cliente/Modelo:</label>
-                    <input type="text" id="client-name" name="client-name" required onkeyup="updateNamePreview(this.value)">
-                </div>
-                
-                <div class="form-group">
-                    <label for="client-date">Fecha:</label>
-                    <input type="date" id="client-date" name="client-date" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="client-phone">Teléfono:</label>
-                    <input type="tel" id="client-phone" name="client-phone">
-                </div>
-
-                <div class="form-group">
-                    <label for="client-email">Email:</label>
-                    <input type="email" id="client-email" name="client-email">
-                </div>
-                
-                <div class="form-group">
-                    <label for="signature-pad">Firma del Cliente/Modelo:</label>
-                    <canvas id="signature-pad"></canvas>
-                    <button type="button" id="clear-signature">Limpiar Firma</button>
-                </div>
-
-                <div class="minor-section">
-                    <h3>Si es menor de edad, el padre/madre/tutor debe firmar:</h3>
-                    <div class="form-group">
-                        <label for="guardian-name">Nombre del Padre/Madre/Tutor:</label>
-                        <input type="text" id="guardian-name" name="guardian-name">
-                    </div>
-                    <div class="form-group">
-                        <label for="guardian-date">Fecha (Tutor):</label>
-                        <input type="date" id="guardian-date" name="guardian-date">
-                    </div>
-                </div>
-            </form>
+        <div class="header">
+            <h1>AUTORIZACIÓN DE USO DE IMAGEN</h1>
+            <p>StellaPhotography - Las Piedras, PR</p>
+            <p>Tel. 939-282-1166</p>
         </div>
-        <div class="button-container">
-            <button id="generate-pdf-btn">Generar y Descargar PDF</button>
+        
+        <div class="form-container">
+            <div class="logo">
+                <h2>StellaPhotography (Jasmary Stella)</h2>
+                <p>Consentimiento para uso de fotografías y videos</p>
+            </div>
+            
+            <p style="margin: 15px 0; text-align: justify;">
+                Yo, <input type="text" id="fullName" placeholder="Nombre completo" style="width: 300px; display: inline-block;">, autorizo a 
+                StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su 
+                publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus 
+                servicios fotográficos.
+            </p>
+            
+            <div class="form-group">
+                <label>Autorizo el uso de mi imagen:</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="consentYes" name="consent" value="Sí">
+                        <label for="consentYes">Sí</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="consentNo" name="consent" value="No">
+                        <label for="consentNo">No</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="clientName">Nombre del Cliente/Modelo:</label>
+                        <input type="text" id="clientName" placeholder="Nombre completo">
+                    </div>
+                </div>
+                
+                <div class="form-col">
+                    <div class="form-group">
+                        <label>Firma del Cliente/Modelo:</label>
+                        <div class="signature-container">
+                            <canvas id="signature-pad" width="600" height="200"></canvas>
+                        </div>
+                        <div class="signature-controls">
+                            <button type="button" class="btn-clear" id="clear-signature">Limpiar Firma</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="date">Fecha:</label>
+                        <input type="date" id="date">
+                    </div>
+                </div>
+                
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="phone">Teléfono:</label>
+                        <input type="tel" id="phone" placeholder="Número de teléfono">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" placeholder="Correo electrónico">
+            </div>
+            
+            <div class="disclaimer">
+                <p><strong>Si es menor de edad, el padre/madre/tutor debe firmar:</strong></p>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="guardianName">Nombre del Padre/Madre/Tutor:</label>
+                        <input type="text" id="guardianName" placeholder="Nombre completo del tutor">
+                    </div>
+                </div>
+                
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="guardianSignature">Firma:</label>
+                        <div class="signature-container">
+                            <canvas id="guardian-signature-pad" width="600" height="200"></canvas>
+                        </div>
+                        <div class="signature-controls">
+                            <button type="button" class="btn-clear" id="clear-guardian-signature">Limpiar Firma</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-col">
+                    <div class="form-group">
+                        <label for="guardianDate">Fecha:</label>
+                        <input type="date" id="guardianDate">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="button" class="btn-submit" id="submit-btn">Completar Autorización</button>
+            
+            <div class="action-buttons">
+                <button type="button" class="btn-whatsapp" id="whatsapp-btn" disabled>Enviar por WhatsApp</button>
+                <button type="button" class="btn-email" id="email-btn" disabled>Enviar por Email</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // --- INICIALIZACIÓN Y CONFIGURACIÓN ---
-        window.jsPDF = window.jspdf.jsPDF;
-
-        const canvas = document.getElementById('signature-pad');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
-
-        function resizeCanvas() {
-            const container = canvas.parentElement;
-            canvas.width = container.offsetWidth;
-            canvas.height = 150; // Altura fija para el área de firma
-        }
-
-        window.addEventListener('load', () => {
-            resizeCanvas();
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('client-date').value = today;
-            document.getElementById('guardian-date').value = today;
-        });
-        window.addEventListener('resize', resizeCanvas);
+        // Signature pad functionality
+        const signaturePad = initializeSignaturePad('signature-pad');
+        const guardianSignaturePad = initializeSignaturePad('guardian-signature-pad');
         
-        // --- FUNCIONALIDAD DE FIRMA DIGITAL ---
-        function getPos(event) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
+        function initializeSignaturePad(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
             
-            if (event.touches && event.touches.length > 0) {
-                 return {
-                    x: (event.touches[0].clientX - rect.left) * scaleX,
-                    y: (event.touches[0].clientY - rect.top) * scaleY
-                };
+            // Set canvas size to match its display size
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = canvas.offsetWidth * dpr;
+            canvas.height = canvas.offsetHeight * dpr;
+            ctx.scale(dpr, dpr);
+            
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#000000';
+            
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = getCoordinates(e);
             }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                
+                const [x, y] = getCoordinates(e);
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                [lastX, lastY] = [x, y];
+            }
+            
+            function stopDrawing() {
+                isDrawing = false;
+            }
+            
+            function getCoordinates(e) {
+                let x, y;
+                
+                if (e.type.includes('touch')) {
+                    const touch = e.touches[0] || e.changedTouches[0];
+                    const rect = canvas.getBoundingClientRect();
+                    x = touch.clientX - rect.left;
+                    y = touch.clientY - rect.top;
+                } else {
+                    x = e.offsetX;
+                    y = e.offsetY;
+                }
+                
+                return [x, y];
+            }
+            
+            // Mouse events
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Touch events for mobile
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startDrawing(e);
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                draw(e);
+            });
+            canvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                stopDrawing(e);
+            });
+            
             return {
-                x: (event.clientX - rect.left) * scaleX,
-                y: (event.clientY - rect.top) * scaleY
+                canvas: canvas,
+                ctx: ctx,
+                clear: () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
             };
         }
-
-        function startDrawing(e) {
-            e.preventDefault();
-            drawing = true;
-            const pos = getPos(e);
-            ctx.beginPath();
-            ctx.moveTo(pos.x, pos.y);
-        }
-
-        function draw(e) {
-            if (!drawing) return;
-            e.preventDefault();
-            const pos = getPos(e);
-            ctx.lineTo(pos.x, pos.y);
-            ctx.stroke();
-        }
-
-        function stopDrawing(e) {
-            e.preventDefault();
-            drawing = false;
-        }
-
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('touchstart', startDrawing);
-        canvas.addEventListener('touchmove', draw);
-        canvas.addEventListener('touchend', stopDrawing);
-
-        document.getElementById('clear-signature').addEventListener('click', () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        });
-
-        // --- FUNCIONALIDAD DEL FORMULARIO ---
-        function updateNamePreview(name) {
-            document.getElementById('client-name-preview').textContent = name || '[Nombre del Cliente]';
-        }
         
-        // --- GENERADOR DE PDF ---
-        document.getElementById('generate-pdf-btn').addEventListener('click', function() {
-            const form = document.getElementById('image-release-form');
-            if (!form.checkValidity()) {
-                form.reportValidity();
+        // Clear signature buttons
+        document.getElementById('clear-signature').addEventListener('click', () => {
+            signaturePad.clear();
+        });
+        
+        document.getElementById('clear-guardian-signature').addEventListener('click', () => {
+            guardianSignaturePad.clear();
+        });
+        
+        // Submit button functionality
+        document.getElementById('submit-btn').addEventListener('click', function() {
+            const consent = document.querySelector('input[name="consent"]:checked');
+            if (!consent) {
+                alert('Por favor, seleccione si autoriza o no el uso de su imagen.');
                 return;
             }
-
-            const btn = this;
-            btn.textContent = 'Generando...';
-            btn.disabled = true;
-
-            const content = document.getElementById('pdf-content');
             
-            html2canvas(content, {
-                scale: 2, // Aumenta la resolución de la imagen
-                useCORS: true // Necesario si la imagen del logo es externa
-            }).then(canvas => {
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF('p', 'mm', 'a4');
-                
-                const pdfWidth = 210; // Ancho de A4 en mm
-                const imgWidth = canvas.width;
-                const imgHeight = canvas.height;
-                const ratio = imgHeight / imgWidth;
-                const pdfHeight = (pdfWidth * ratio);
-
-                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-                
-                const clientName = document.getElementById('client-name').value || 'documento';
-                const filename = `Autorizacion_${clientName.replace(/ /g, '_')}.pdf`;
-
-                pdf.save(filename);
-
-            }).finally(() => {
-                btn.textContent = 'Generar y Descargar PDF';
-                btn.disabled = false;
-            });
+            if (consent.value === 'No') {
+                alert('Para completar la autorización, debe seleccionar "Sí" en la autorización de uso de imagen.');
+                return;
+            }
+            
+            // Enable action buttons after form completion
+            document.getElementById('whatsapp-btn').disabled = false;
+            document.getElementById('email-btn').disabled = false;
+            
+            // Scroll to action buttons
+            document.querySelector('.action-buttons').scrollIntoView({ behavior: 'smooth' });
+            
+            alert('¡Autorización completada! Ahora puede enviarla por WhatsApp o Email.');
         });
+        
+        // WhatsApp button functionality
+        document.getElementById('whatsapp-btn').addEventListener('click', function() {
+            // In a real implementation, this would generate a PDF and send it via WhatsApp
+            alert('Enviando autorización por WhatsApp...\n(En una implementación real, se generaría un PDF y se abriría WhatsApp)');
+        });
+        
+        // Email button functionality
+        document.getElementById('email-btn').addEventListener('click', function() {
+            // In a real implementation, this would generate a PDF and send it via email
+            alert('Enviando autorización por Email...\n(En una implementación real, se generaría un PDF y se enviaría por correo)');
+        });
+        
+        // Set today's date as default
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+        document.getElementById('guardianDate').value = today;
     </script>
-
 </body>
 </html>
