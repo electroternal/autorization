@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Use Authorization – StellaPhotography</title>
+  <style>
+    :root {
+      --primary: #4a6fa5;
+      --secondary: #6b8cbc;
+      --light: #f8f9fa;
+      --dark: #343a40;
+      --success: #28a745;
+      --danger: #dc3545;
+      --border: #ced4da;
+      --shadow: rgba(0,0,0,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f7fa;
+      color: var(--dark);
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 15px 0;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: var(--secondary);
+    }
+
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--dark);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .radio-option input {
+      width: auto;
+    }
+
+    .signature-pad {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: white;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      font-style: italic;
+      color: #6c757d;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      text-align: center;
+    }
+
+    .btn-email {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-whatsapp {
+      background: #25d366;
+      color: white;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .underage-section {
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-radius: 10px;
+      margin-top: 10px;
+      border: 1px dashed var(--border);
+    }
+
+    .error {
+      color: var(--danger);
+      font-size: 0.875rem;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 600px) {
+      .btn-group {
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Image Use Authorization – StellaPhotography</h1>
+    <p class="subtitle">Las Piedras, PR | Tel. 939-282-1166</p>
+  </header>
+
+  <main class="form-container">
+    <form id="authorizationForm">
+      <!-- Client/Model Name -->
+      <div class="form-group">
+        <label for="clientName">Client/Model Name *</label>
+        <input type="text" id="clientName" name="clientName" required />
+        <div class="error" id="clientNameError"></div>
+      </div>
+
+      <!-- Authorization -->
+      <div class="form-group">
+        <label>Authorize Use of My Image *</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="authYes" name="authorization" value="Yes" required />
+            <label for="authYes">Yes</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="authNo" name="authorization" value="No" required />
+            <label for="authNo">No</label>
+          </div>
+        </div>
+        <div class="error" id="authorizationError"></div>
+      </div>
+
+      <!-- Signature -->
+      <div class="form-group">
+        <label for="signature">Signature *</label>
+        <div class="signature-pad" id="signature">Sign by typing your full name</div>
+        <input type="hidden" id="signatureInput" name="signature" required />
+        <div class="error" id="signatureError"></div>
+      </div>
+
+      <!-- Date -->
+      <div class="form-group">
+        <label for="date">Date *</label>
+        <input type="date" id="date" name="date" required />
+        <div class="error" id="dateError"></div>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label for="phone">Phone *</label>
+        <input type="tel" id="phone" name="phone" required />
+        <div class="error" id="phoneError"></div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" required />
+        <div class="error" id="emailError"></div>
+      </div>
+
+      <!-- Underage Section -->
+      <div class="form-group">
+        <label>If underage, parent/guardian must complete the following:</label>
+        <div class="underage-section">
+          <div class="form-group">
+            <label for="guardianName">Parent/Guardian Name</label>
+            <input type="text" id="guardianName" name="guardianName" />
+          </div>
+          <div class="form-group">
+            <label for="guardianSignature">Parent/Guardian Signature</label>
+            <div class="signature-pad" id="guardianSignature">Sign by typing full name</div>
+            <input type="hidden" id="guardianSignatureInput" name="guardianSignature" />
+          </div>
+          <div class="form-group">
+            <label for="guardianDate">Date</label>
+            <input type="date" id="guardianDate" name="guardianDate" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="btn-group">
+        <button type="button" class="btn btn-email" id="sendEmail">Send via Email</button>
+        <button type="button" class="btn btn-whatsapp" id="sendWhatsApp">Send via WhatsApp</button>
+      </div>
+    </form>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set today's date as default
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('date').value = today;
+      document.getElementById('guardianDate').value = today;
+
+      // Signature inputs
+      const signaturePad = document.getElementById('signature');
+      const signatureInput = document.getElementById('signatureInput');
+      signaturePad.addEventListener('click', () => {
+        const name = prompt('Please type your full name for signature:');
+        if (name && name.trim() !== '') {
+          signaturePad.textContent = name.trim();
+          signatureInput.value = name.trim();
+        }
+      });
+
+      const guardianSignaturePad = document.getElementById('guardianSignature');
+      const guardianSignatureInput = document.getElementById('guardianSignatureInput');
+      guardianSignaturePad.addEventListener('click', () => {
+        const name = prompt('Please type your full name for signature:');
+        if (name && name.trim() !== '') {
+          guardianSignaturePad.textContent = name.trim();
+          guardianSignatureInput.value = name.trim();
+        }
+      });
+
+      // Validation helpers
+      const setError = (elementId, message) => {
+        document.getElementById(elementId).textContent = message;
+      };
+
+      const clearError = (elementId) => {
+        document.getElementById(elementId).textContent = '';
+      };
+
+      const validateEmail = (email) => {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      };
+
+      const validatePhone = (phone) => {
+        const re = /^[\d\s\-\+\(\)]{10,}$/;
+        return re.test(phone);
+      };
+
+      const validateForm = () => {
+        let isValid = true;
+
+        // Reset errors
+        ['clientName', 'authorization', 'signature', 'date', 'phone', 'email'].forEach(field => {
+          clearError(`${field}Error`);
+        });
+
+        // Client Name
+        if (!document.getElementById('clientName').value.trim()) {
+          setError('clientNameError', 'Client/Model name is required.');
+          isValid = false;
+        }
+
+        // Authorization
+        if (!document.querySelector('input[name="authorization"]:checked')) {
+          setError('authorizationError', 'Please select an option.');
+          isValid = false;
+        }
+
+        // Signature
+        if (!signatureInput.value.trim()) {
+          setError('signatureError', 'Signature is required.');
+          isValid = false;
+        }
+
+        // Date
+        if (!document.getElementById('date').value) {
+          setError('dateError', 'Date is required.');
+          isValid = false;
+        }
+
+        // Phone
+        const phone = document.getElementById('phone').value.trim();
+        if (!phone) {
+          setError('phoneError', 'Phone is required.');
+          isValid = false;
+        } else if (!validatePhone(phone)) {
+          setError('phoneError', 'Please enter a valid phone number.');
+          isValid = false;
+        }
+
+        // Email
+        const email = document.getElementById('email').value.trim();
+        if (!email) {
+          setError('emailError', 'Email is required.');
+          isValid = false;
+        } else if (!validateEmail(email)) {
+          setError('emailError', 'Please enter a valid email address.');
+          isValid = false;
+        }
+
+        return isValid;
+      };
+
+      // Format data for message
+      const formatMessage = () => {
+        const data = {
+          clientName: document.getElementById('clientName').value.trim(),
+          authorization: document.querySelector('input[name="authorization"]:checked')?.value || '',
+          signature: signatureInput.value.trim(),
+          date: document.getElementById('date').value,
+          phone: document.getElementById('phone').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          guardianName: document.getElementById('guardianName').value.trim(),
+          guardianSignature: guardianSignatureInput.value.trim(),
+          guardianDate: document.getElementById('guardianDate').value
+        };
+
+        let message = `*Image Use Authorization – StellaPhotography*\n\n`;
+        message += `Client/Model Name: ${data.clientName}\n`;
+        message += `Authorize Use of My Image: ${data.authorization}\n`;
+        message += `Signature: ${data.signature}\n`;
+        message += `Date: ${data.date}\n`;
+        message += `Phone: ${data.phone}\n`;
+        message += `Email: ${data.email}\n`;
+
+        if (data.guardianName || data.guardianSignature || data.guardianDate) {
+          message += `\n*If underage:*\n`;
+          if (data.guardianName) message += `Parent/Guardian Name: ${data.guardianName}\n`;
+          if (data.guardianSignature) message += `Parent/Guardian Signature: ${data.guardianSignature}\n`;
+          if (data.guardianDate) message += `Date: ${data.guardianDate}\n`;
+        }
+
+        return encodeURIComponent(message);
+      };
+
+      // Email handler
+      document.getElementById('sendEmail').addEventListener('click', () => {
+        if (!validateForm()) return;
+
+        const subject = encodeURIComponent('Image Use Authorization Form - StellaPhotography');
+        const body = formatMessage();
+        const mailtoLink = `mailto:jasmarystella@gmail.com?subject=${subject}&body=${body}`;
+        window.location.href = mailtoLink;
+      });
+
+      // WhatsApp handler
+      document.getElementById('sendWhatsApp').addEventListener('click', () => {
+        if (!validateForm()) return;
+
+        const message = formatMessage();
+        const whatsappLink = `https://wa.me/19392821166?text=${message}`;
+        window.open(whatsappLink, '_blank');
+      });
+    });
+  </script>
+</body>
+</html>
