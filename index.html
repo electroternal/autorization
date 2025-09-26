@@ -5,106 +5,308 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autorización de Uso de Imagen</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 15px;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow-x: hidden;
         }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="2"/></g></g></svg>') repeat;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 25px;
             text-align: center;
-            padding-bottom: 20px;
+            position: relative;
+            overflow: hidden;
         }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .header img {
             width: 100px;
             height: 100px;
             border-radius: 50%;
+            margin-bottom: 20px;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header img:hover {
+            transform: scale(1.05);
+        }
+
+        .header h2 {
+            font-size: 24px;
+            font-weight: 700;
             margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-content {
+            padding: 30px;
+        }
+
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 25px;
+            animation: slideInLeft 0.6s ease-out;
+            animation-fill-mode: both;
         }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         label {
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 10px;
             font-weight: 600;
             color: #333;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         input[type="text"],
         input[type="email"],
         input[type="tel"],
-        select {
+        input[type="date"] {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
         }
-        .date-selector {
-            display: flex;
-            gap: 10px;
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
         }
-        .date-selector select {
-            flex: 1;
-        }
+
         .signature-pad-container {
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
             position: relative;
+            background: white;
+            transition: all 0.3s ease;
         }
+
+        .signature-pad-container:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
         canvas {
             width: 100%;
             height: 150px;
             display: block;
+            border-radius: 10px;
         }
-        .button-container {
-            text-align: center;
-            margin-top: 20px;
+
+        .authorization-text {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 25px 0;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            font-size: 15px;
+            line-height: 1.6;
+            color: #444;
         }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+
         .clear-signature-btn {
-            background-color: #6c757d;
-            padding: 5px 10px;
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
             font-size: 12px;
-            margin-top: 8px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         .clear-signature-btn:hover {
-            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
         }
+
         #minor-section {
             display: none;
-            border-top: 2px dashed #ccc;
-            padding-top: 20px;
-            margin-top: 20px;
+            border-top: 2px dashed #667eea;
+            padding-top: 25px;
+            margin-top: 25px;
+            animation: fadeIn 0.5s ease-out;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .checkbox-group {
             display: flex;
             align-items: center;
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
+
+        .checkbox-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+        }
+
         .checkbox-group input {
-            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
+            cursor: pointer;
         }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+            font-size: 16px;
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -113,241 +315,374 @@
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
         }
+
         .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 10px;
+            background: white;
+            margin: 2% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 900px;
             text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            animation: modalSlideIn 0.4s ease-out;
         }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         .modal-content iframe {
             width: 100%;
             height: 500px;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
         }
+
         .close-btn {
             color: #aaa;
             float: right;
-            font-size: 28px;
+            font-size: 32px;
             font-weight: bold;
             cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #667eea;
+        }
+
+        #whatsapp-share-btn {
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #whatsapp-share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .header {
+                padding: 25px 20px;
+            }
+            
+            .form-content {
+                padding: 25px 20px;
+            }
+            
+            .header h2 {
+                font-size: 20px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <!-- Reemplaza esta URL con la de tu logo -->
-        <img src="https://i.imgur.com/your-logo-image.png" alt="Logo de StellaPhotography">
+        <img id="company-logo" src="logo.jpg" alt="Logo de StellaPhotography">
         <h2>AUTORIZACIÓN DE USO DE IMAGEN</h2>
         <p><strong>StellaPhotography - Las Piedras, PR</strong><br>Tel. 939-282-1166</p>
     </div>
 
-    <form id="authorization-form">
-        <div class="form-group">
-            <label for="name">Yo:</label>
-            <input type="text" id="name" name="name" placeholder="Escribe tu nombre completo" required>
-        </div>
-
-        <p>autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.</p>
-
-        <div class="form-group">
-            <label for="date">Fecha:</label>
-            <div class="date-selector" id="date">
-                <select id="day" required><option value="">Día</option></select>
-                <select id="month" required><option value="">Mes</option></select>
-                <select id="year" required><option value="">Año</option></select>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="signature">Firma del Cliente/Modelo:</label>
-            <div class="signature-pad-container">
-                <canvas id="signature-pad"></canvas>
-            </div>
-            <button type="button" class="clear-signature-btn" id="clear-signature">Limpiar Firma</button>
-        </div>
-
-        <div class="form-group">
-            <label for="phone">Teléfono:</label>
-            <input type="tel" id="phone" name="phone" placeholder="Ej: 787-123-4567">
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Ej: tu_correo@email.com">
-        </div>
-
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="is-minor">
-            <label for="is-minor">Es menor de edad (requiere firma de tutor)</label>
-        </div>
-
-        <!-- Sección para menores de edad -->
-        <div id="minor-section">
-            <h4>Firma del Padre/Madre/Tutor:</h4>
+    <div class="form-content">
+        <form id="authorization-form">
             <div class="form-group">
-                <label for="parent-name">Nombre del Padre/Madre/Tutor:</label>
-                <input type="text" id="parent-name" name="parent-name">
+                <label for="name">Nombre Completo:</label>
+                <input type="text" id="name" name="name" placeholder="Escribe tu nombre completo" required>
+            </div>
+
+            <div class="authorization-text">
+                <p><strong>Yo,</strong> <em id="name-preview">[Tu nombre]</em>, <strong>autorizo a StellaPhotography (Jasmary Stella)</strong> a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.</p>
             </div>
 
             <div class="form-group">
-                <label for="parent-signature">Firma:</label>
+                <label for="date">Fecha:</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signature">Firma del Cliente/Modelo:</label>
                 <div class="signature-pad-container">
-                    <canvas id="parent-signature-pad"></canvas>
+                    <canvas id="signature-pad"></canvas>
                 </div>
-                <button type="button" class="clear-signature-btn" id="clear-parent-signature">Limpiar Firma</button>
+                <button type="button" class="clear-signature-btn" id="clear-signature">Limpiar Firma</button>
             </div>
-             <div class="form-group">
-                <label for="parent-date">Fecha (Tutor):</label>
-                <div class="date-selector" id="parent-date">
-                    <select id="parent-day"><option value="">Día</option></select>
-                    <select id="parent-month"><option value="">Mes</option></select>
-                    <select id="parent-year"><option value="">Año</option></select>
-                </div>
-            </div>
-        </div>
 
-        <div class="button-container">
-            <button type="submit">Generar Vista Previa</button>
-        </div>
-    </form>
+            <div class="form-group">
+                <label for="phone">Teléfono:</label>
+                <input type="tel" id="phone" name="phone" placeholder="Ej: 787-123-4567">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email (Opcional):</label>
+                <input type="email" id="email" name="email" placeholder="Ej: tu_correo@email.com">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="is-minor">
+                <label for="is-minor">Es menor de edad (requiere firma de tutor)</label>
+            </div>
+
+            <div id="minor-section">
+                <h4 style="color: #667eea; margin-bottom: 20px; font-size: 18px;">Información del Tutor Legal</h4>
+                <div class="form-group">
+                    <label for="parent-name">Nombre del Padre/Madre/Tutor:</label>
+                    <input type="text" id="parent-name" name="parent-name">
+                </div>
+                <div class="form-group">
+                    <label for="parent-date">Fecha (Tutor):</label>
+                    <input type="date" id="parent-date" name="parent-date">
+                </div>
+                <div class="form-group">
+                    <label for="parent-signature">Firma del Tutor:</label>
+                    <div class="signature-pad-container">
+                        <canvas id="parent-signature-pad"></canvas>
+                    </div>
+                    <button type="button" class="clear-signature-btn" id="clear-parent-signature">Limpiar Firma</button>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button type="submit" class="submit-btn">Generar Formulario y Enviar</button>
+            </div>
+        </form>
+    </div>
 </div>
 
-<!-- Modal para la vista previa del PDF -->
 <div id="pdf-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
-        <h3>Vista Previa del Documento</h3>
+        <h3 style="color: #667eea; margin-bottom: 20px;">Vista Previa del Documento</h3>
         <iframe id="pdf-preview" frameborder="0"></iframe>
         <p>El PDF se ha descargado. Haz clic abajo para compartirlo en WhatsApp.</p>
         <button id="whatsapp-share-btn">Compartir en WhatsApp</button>
     </div>
 </div>
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const { jsPDF } = window.jspdf;
+        let logoBase64 = null;
 
-        // Inicializar Signature Pads
-        const signaturePad = new SignaturePad(document.getElementById('signature-pad'));
-        const parentSignaturePad = new SignaturePad(document.getElementById('parent-signature-pad'));
-        document.getElementById('clear-signature').addEventListener('click', () => signaturePad.clear());
-        document.getElementById('clear-parent-signature').addEventListener('click', () => parentSignaturePad.clear());
+        // Configurar fecha actual
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('date').value = today;
+        document.getElementById('parent-date').value = today;
 
-        // Llenar selectores de fecha
-        function populateDateSelectors(dayId, monthId, yearId) {
-            const dayEl = document.getElementById(dayId);
-            const monthEl = document.getElementById(monthId);
-            const yearEl = document.getElementById(yearId);
-            for (let i = 1; i <= 31; i++) dayEl.innerHTML += `<option value="${i}">${i}</option>`;
-            const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            months.forEach((month, i) => monthEl.innerHTML += `<option value="${i + 1}">${month}</option>`);
-            const currentYear = new Date().getFullYear();
-            for (let i = currentYear; i >= currentYear - 100; i--) yearEl.innerHTML += `<option value="${i}">${i}</option>`;
+        // Función simple para convertir imagen a base64
+        function loadImageAsBase64() {
+            const img = document.getElementById('company-logo');
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function processImage() {
+                try {
+                    canvas.width = 200;
+                    canvas.height = 200;
+                    ctx.drawImage(img, 0, 0, 200, 200);
+                    logoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                    console.log('Logo convertido a base64 exitosamente');
+                } catch (error) {
+                    console.log('Error al convertir logo:', error);
+                }
+            }
+            
+            if (img.complete) {
+                processImage();
+            } else {
+                img.addEventListener('load', processImage);
+                img.addEventListener('error', () => console.log('Error al cargar logo'));
+            }
         }
-        populateDateSelectors('day', 'month', 'year');
-        populateDateSelectors('parent-day', 'parent-month', 'parent-year');
+
+        // Cargar logo
+        loadImageAsBase64();
+
+        // Inicializar signature pads
+        const canvas1 = document.getElementById('signature-pad');
+        const canvas2 = document.getElementById('parent-signature-pad');
         
-        // Lógica para mostrar/ocultar sección de menor de edad
-        const isMinorCheckbox = document.getElementById('is-minor');
-        const minorSection = document.getElementById('minor-section');
-        isMinorCheckbox.addEventListener('change', function() {
-            minorSection.style.display = this.checked ? 'block' : 'none';
-            document.getElementById('parent-name').required = this.checked;
+        const signaturePad = new SignaturePad(canvas1, {
+            backgroundColor: 'rgba(255,255,255,0)',
+            penColor: 'rgb(0, 0, 0)'
+        });
+        
+        const parentSignaturePad = new SignaturePad(canvas2, {
+            backgroundColor: 'rgba(255,255,255,0)',
+            penColor: 'rgb(0, 0, 0)'
+        });
+        
+        // Botones para limpiar firmas
+        document.getElementById('clear-signature').addEventListener('click', function() {
+            signaturePad.clear();
+        });
+        
+        document.getElementById('clear-parent-signature').addEventListener('click', function() {
+            parentSignaturePad.clear();
         });
 
-        // Lógica del Modal
+        // Preview del nombre en tiempo real
+        document.getElementById('name').addEventListener('input', function() {
+            const preview = document.getElementById('name-preview');
+            preview.textContent = this.value || '[Tu nombre]';
+        });
+
+        // Manejar sección de menor
+        const isMinorCheckbox = document.getElementById('is-minor');
+        const minorSection = document.getElementById('minor-section');
+        
+        isMinorCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                minorSection.style.display = 'block';
+                document.getElementById('parent-name').required = true;
+            } else {
+                minorSection.style.display = 'none';
+                document.getElementById('parent-name').required = false;
+            }
+        });
+
+        // Modal
         const modal = document.getElementById('pdf-modal');
         const closeBtn = document.querySelector('.close-btn');
-        closeBtn.onclick = () => modal.style.display = "none";
-        window.onclick = (event) => {
+        
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+        
+        window.onclick = function(event) {
             if (event.target == modal) {
                 modal.style.display = "none";
             }
         }
 
-        // Generar y mostrar PDF
-        document.getElementById('authorization-form').addEventListener('submit', function (event) {
+        // Envío del formulario
+        document.getElementById('authorization-form').addEventListener('submit', function(event) {
             event.preventDefault();
             
+            // Validaciones
             if (signaturePad.isEmpty()) {
-                alert("Por favor, provea la firma del cliente/modelo.");
+                alert("Por favor, firma en el campo correspondiente.");
                 return;
             }
+            
             if (isMinorCheckbox.checked && parentSignaturePad.isEmpty()) {
-                alert("Por favor, provea la firma del padre/tutor.");
+                alert("Por favor, el tutor debe firmar en el campo correspondiente.");
                 return;
             }
 
-            const doc = new jsPDF();
-            const clientName = document.getElementById('name').value;
-            
-            // --- Construcción del PDF ---
-            doc.setFontSize(16);
-            doc.text("AUTORIZACIÓN DE USO DE IMAGEN", 105, 20, { align: "center" });
-            doc.setFontSize(12);
-            doc.text("StellaPhotography - Las Piedras, PR", 105, 30, { align: "center" });
-            doc.text("Tel. 939-282-1166", 105, 40, { align: "center" });
-
-            const textLines = doc.splitTextToSize(`Yo, ${clientName}, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.`, 170);
-            doc.text(textLines, 20, 60);
-
-            const day = document.getElementById('day').value;
-            const month = document.getElementById('month').value;
-            const year = document.getElementById('year').value;
-            doc.text(`Fecha: ${day}/${month}/${year}`, 20, 100);
-            
-            doc.text("Firma del Cliente/Modelo:", 20, 110);
-            const signatureImage = signaturePad.toDataURL();
-            doc.addImage(signatureImage, 'PNG', 20, 115, 60, 25);
-            
-            doc.text(`Teléfono: ${document.getElementById('phone').value}`, 20, 150);
-            doc.text(`Email: ${document.getElementById('email').value}`, 20, 160);
-
-            if (isMinorCheckbox.checked) {
-                doc.setLineDashPattern([2, 2], 0);
-                doc.line(20, 175, 190, 175);
-                doc.text("Firmado por Padre/Madre/Tutor por ser menor de edad:", 20, 185);
-                doc.text(`Nombre del Tutor: ${document.getElementById('parent-name').value}`, 20, 195);
+            try {
+                // Crear PDF
+                const doc = new jsPDF();
+                const clientName = document.getElementById('name').value;
                 
-                const pDay = document.getElementById('parent-day').value;
-                const pMonth = document.getElementById('parent-month').value;
-                const pYear = document.getElementById('parent-year').value;
-                doc.text(`Fecha (Tutor): ${pDay}/${pMonth}/${pYear}`, 20, 205);
+                // Agregar logo si existe
+                if (logoBase64) {
+                    doc.addImage(logoBase64, 'JPEG', 85, 10, 40, 40);
+                }
 
-                doc.text("Firma del Tutor:", 20, 215);
-                const parentSignatureImage = parentSignaturePad.toDataURL();
-                doc.addImage(parentSignatureImage, 'PNG', 20, 220, 60, 25);
+                // Título y encabezado
+                doc.setFontSize(16);
+                doc.text("AUTORIZACIÓN DE USO DE IMAGEN", 105, 60, { align: "center" });
+                
+                doc.setFontSize(12);
+                doc.text("StellaPhotography - Las Piedras, PR", 105, 70, { align: "center" });
+                doc.text("Tel. 939-282-1166", 105, 80, { align: "center" });
+
+                // Texto principal
+                const mainText = `Yo, ${clientName}, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.`;
+                const textLines = doc.splitTextToSize(mainText, 170);
+                doc.text(textLines, 20, 95);
+
+                // Fecha
+                const dateValue = document.getElementById('date').value;
+                if (dateValue) {
+                    const [year, month, day] = dateValue.split('-');
+                    const formattedDate = `${day}/${month}/${year}`;
+                    doc.text(`Fecha: ${formattedDate}`, 20, 130);
+                }
+                
+                // Firma del cliente
+                doc.text("Firma del Cliente/Modelo:", 20, 140);
+                const signatureImage = signaturePad.toDataURL();
+                doc.addImage(signatureImage, 'PNG', 20, 145, 60, 25);
+                
+                // Información de contacto
+                const phone = document.getElementById('phone').value || '';
+                const email = document.getElementById('email').value || '';
+                doc.text(`Teléfono: ${phone}`, 20, 180);
+                doc.text(`Email: ${email}`, 20, 190);
+
+                // Sección menor de edad
+                if (isMinorCheckbox.checked) {
+                    doc.setLineDashPattern([2, 2], 0);
+                    doc.line(20, 200, 190, 200);
+                    doc.setLineDashPattern([], 0);
+                    
+                    doc.text("Firmado por Padre/Madre/Tutor por ser menor de edad:", 20, 210);
+                    doc.text(`Nombre del Tutor: ${document.getElementById('parent-name').value}`, 20, 220);
+                    
+                    const pDateValue = document.getElementById('parent-date').value;
+                    if (pDateValue) {
+                        const [pYear, pMonth, pDay] = pDateValue.split('-');
+                        const pFormattedDate = `${pDay}/${pMonth}/${pYear}`;
+                        doc.text(`Fecha (Tutor): ${pFormattedDate}`, 20, 230);
+                    }
+
+                    doc.text("Firma del Tutor:", 20, 240);
+                    const parentSignatureImage = parentSignaturePad.toDataURL();
+                    doc.addImage(parentSignatureImage, 'PNG', 20, 245, 60, 25);
+                }
+
+                // Mostrar en modal y descargar
+                const pdfDataUri = doc.output('datauristring');
+                document.getElementById('pdf-preview').src = pdfDataUri;
+                modal.style.display = 'block';
+
+                // Descargar PDF
+                const fileName = `Autorizacion_${clientName.replace(/\s/g, '_')}.pdf`;
+                doc.save(fileName);
+
+                // Configurar botón de WhatsApp
+                const message = encodeURIComponent(`¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography.`);
+                document.getElementById('whatsapp-share-btn').onclick = function() {
+                    window.open(`https://wa.me/?text=${message}`, '_blank');
+                };
+
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                alert('Error al generar el PDF. Por favor, inténtalo de nuevo.');
             }
-            
-            // --- Mostrar en Modal y Preparar para compartir ---
-            const pdfDataUri = doc.output('datauristring');
-            document.getElementById('pdf-preview').src = pdfDataUri;
-            modal.style.display = 'block';
-
-            // Descarga automática
-            const fileName = `Autorizacion_${clientName.replace(/\s/g, '_')}.pdf`;
-            const downloadLink = document.createElement('a');
-            downloadLink.href = doc.output('bloburl'); // Usar bloburl para descarga directa en navegadores modernos
-            downloadLink.download = fileName;
-            downloadLink.click();
-
-            // Configurar botón de WhatsApp
-            const message = encodeURIComponent(`¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography. Por favor, adjunta el PDF que acabas de descargar.`);
-            document.getElementById('whatsapp-share-btn').onclick = function() {
-                window.open(`https://wa.me/?text=${message}`, '_blank');
-            };
         });
     });
 </script>
