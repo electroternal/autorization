@@ -1,422 +1,323 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Image Use Authorization – StellaPhotography</title>
-  <style>
-    :root {
-      --primary: #4a6fa5;
-      --secondary: #6b8cbc;
-      --light: #f8f9fa;
-      --dark: #343a40;
-      --success: #28a745;
-      --danger: #dc3545;
-      --border: #ced4da;
-      --shadow: rgba(0,0,0,0.1);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autorización de Uso de Imagen - StellaPhotography</title>
+    
+    <!-- Librerías para generar el PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f5f7fa;
-      color: var(--dark);
-      line-height: 1.6;
-      padding: 20px;
-    }
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            overflow: hidden; /* Para que los bordes redondeados se apliquen bien */
+        }
+        
+        /* Esta es la sección que se convertirá en PDF */
+        #pdf-content {
+            padding: 25px;
+        }
 
-    header {
-      text-align: center;
-      margin-bottom: 30px;
-      padding: 15px 0;
-    }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    h1 {
-      font-size: 1.8rem;
-      color: var(--primary);
-      margin-bottom: 5px;
-    }
+        .header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #e0e0e0;
+        }
 
-    .subtitle {
-      font-size: 1rem;
-      color: var(--secondary);
-    }
+        .header h1 {
+            margin: 10px 0 5px;
+            font-size: 1.8em;
+            color: #333;
+        }
 
-    .form-container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px var(--shadow);
-    }
+        .header p {
+            margin: 0;
+            color: #777;
+        }
 
-    .form-group {
-      margin-bottom: 20px;
-    }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      color: var(--dark);
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
 
-    input[type="text"],
-    input[type="email"],
-    input[type="tel"],
-    input[type="date"] {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 1rem;
-      transition: border-color 0.3s;
-    }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="tel"],
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+        
+        .consent-options { display: flex; gap: 20px; }
+        .consent-options label { font-weight: normal; }
+        
+        #signature-pad {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
+        #clear-signature {
+            display: block;
+            margin: 10px auto 0;
+            background: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
 
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(74, 111, 165, 0.2);
-    }
+        .minor-section {
+            border-top: 1px solid #eee;
+            margin-top: 25px;
+            padding-top: 15px;
+        }
+        
+        .minor-section h3 { margin-top: 0; font-size: 1.1em; color: #444; }
 
-    .radio-group {
-      display: flex;
-      gap: 20px;
-    }
+        .button-container {
+            padding: 25px;
+            background-color: #f9f9f9;
+            border-top: 1px solid #eee;
+        }
+        
+        #generate-pdf-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background-color: #d9534f;
+            color: #fff;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
 
-    .radio-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .radio-option input {
-      width: auto;
-    }
-
-    .signature-pad {
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      background: white;
-      min-height: 60px;
-      display: flex;
-      align-items: center;
-      font-style: italic;
-      color: #6c757d;
-    }
-
-    .btn-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .btn {
-      flex: 1;
-      min-width: 180px;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s, transform 0.2s;
-      text-align: center;
-    }
-
-    .btn-email {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-whatsapp {
-      background: #25d366;
-      color: white;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-      transform: translateY(-2px);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-    }
-
-    .underage-section {
-      padding: 20px;
-      background-color: #f8f9fa;
-      border-radius: 10px;
-      margin-top: 10px;
-      border: 1px dashed var(--border);
-    }
-
-    .error {
-      color: var(--danger);
-      font-size: 0.875rem;
-      margin-top: 5px;
-    }
-
-    @media (max-width: 600px) {
-      .btn-group {
-        flex-direction: column;
-      }
-
-      h1 {
-        font-size: 1.5rem;
-      }
-    }
-  </style>
+        #generate-pdf-btn:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Image Use Authorization – StellaPhotography</h1>
-    <p class="subtitle">Las Piedras, PR | Tel. 939-282-1166</p>
-  </header>
 
-  <main class="form-container">
-    <form id="authorizationForm">
-      <!-- Client/Model Name -->
-      <div class="form-group">
-        <label for="clientName">Client/Model Name *</label>
-        <input type="text" id="clientName" name="clientName" required />
-        <div class="error" id="clientNameError"></div>
-      </div>
+    <div class="container">
+        <div id="pdf-content">
+            <div class="header">
+                <img src="https://i.imgur.com/nBi14aC.png" alt="Logo de StellaPhotography">
+                <h1>Autorización de Uso de Imagen</h1>
+                <p>StellaPhotography - Las Piedras, PR</p>
+                <p>Tel. 939-282-1166</p>
+            </div>
 
-      <!-- Authorization -->
-      <div class="form-group">
-        <label>Authorize Use of My Image *</label>
-        <div class="radio-group">
-          <div class="radio-option">
-            <input type="radio" id="authYes" name="authorization" value="Yes" required />
-            <label for="authYes">Yes</label>
-          </div>
-          <div class="radio-option">
-            <input type="radio" id="authNo" name="authorization" value="No" required />
-            <label for="authNo">No</label>
-          </div>
+            <form id="image-release-form">
+                <p>Yo, <span id="client-name-preview" style="font-weight: bold;">[Nombre del Cliente]</span>, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.</p>
+                
+                <div class="form-group consent-options">
+                    <label><input type="radio" name="consent" value="Sí" checked> Sí, autorizo el uso de mi imagen.</label>
+                    <label><input type="radio" name="consent" value="No"> No, no autorizo.</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="client-name">Nombre del Cliente/Modelo:</label>
+                    <input type="text" id="client-name" name="client-name" required onkeyup="updateNamePreview(this.value)">
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-date">Fecha:</label>
+                    <input type="date" id="client-date" name="client-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-phone">Teléfono:</label>
+                    <input type="tel" id="client-phone" name="client-phone">
+                </div>
+
+                <div class="form-group">
+                    <label for="client-email">Email:</label>
+                    <input type="email" id="client-email" name="client-email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="signature-pad">Firma del Cliente/Modelo:</label>
+                    <canvas id="signature-pad"></canvas>
+                    <button type="button" id="clear-signature">Limpiar Firma</button>
+                </div>
+
+                <div class="minor-section">
+                    <h3>Si es menor de edad, el padre/madre/tutor debe firmar:</h3>
+                    <div class="form-group">
+                        <label for="guardian-name">Nombre del Padre/Madre/Tutor:</label>
+                        <input type="text" id="guardian-name" name="guardian-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="guardian-date">Fecha (Tutor):</label>
+                        <input type="date" id="guardian-date" name="guardian-date">
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="error" id="authorizationError"></div>
-      </div>
-
-      <!-- Signature -->
-      <div class="form-group">
-        <label for="signature">Signature *</label>
-        <div class="signature-pad" id="signature">Sign by typing your full name</div>
-        <input type="hidden" id="signatureInput" name="signature" required />
-        <div class="error" id="signatureError"></div>
-      </div>
-
-      <!-- Date -->
-      <div class="form-group">
-        <label for="date">Date *</label>
-        <input type="date" id="date" name="date" required />
-        <div class="error" id="dateError"></div>
-      </div>
-
-      <!-- Phone -->
-      <div class="form-group">
-        <label for="phone">Phone *</label>
-        <input type="tel" id="phone" name="phone" required />
-        <div class="error" id="phoneError"></div>
-      </div>
-
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email">Email *</label>
-        <input type="email" id="email" name="email" required />
-        <div class="error" id="emailError"></div>
-      </div>
-
-      <!-- Underage Section -->
-      <div class="form-group">
-        <label>If underage, parent/guardian must complete the following:</label>
-        <div class="underage-section">
-          <div class="form-group">
-            <label for="guardianName">Parent/Guardian Name</label>
-            <input type="text" id="guardianName" name="guardianName" />
-          </div>
-          <div class="form-group">
-            <label for="guardianSignature">Parent/Guardian Signature</label>
-            <div class="signature-pad" id="guardianSignature">Sign by typing full name</div>
-            <input type="hidden" id="guardianSignatureInput" name="guardianSignature" />
-          </div>
-          <div class="form-group">
-            <label for="guardianDate">Date</label>
-            <input type="date" id="guardianDate" name="guardianDate" />
-          </div>
+        <div class="button-container">
+            <button id="generate-pdf-btn">Generar y Descargar PDF</button>
         </div>
-      </div>
+    </div>
 
-      <!-- Buttons -->
-      <div class="btn-group">
-        <button type="button" class="btn btn-email" id="sendEmail">Send via Email</button>
-        <button type="button" class="btn btn-whatsapp" id="sendWhatsApp">Send via WhatsApp</button>
-      </div>
-    </form>
-  </main>
+    <script>
+        // --- INICIALIZACIÓN Y CONFIGURACIÓN ---
+        window.jsPDF = window.jspdf.jsPDF;
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      // Set today's date as default
-      const today = new Date().toISOString().split('T')[0];
-      document.getElementById('date').value = today;
-      document.getElementById('guardianDate').value = today;
+        const canvas = document.getElementById('signature-pad');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
 
-      // Signature inputs
-      const signaturePad = document.getElementById('signature');
-      const signatureInput = document.getElementById('signatureInput');
-      signaturePad.addEventListener('click', () => {
-        const name = prompt('Please type your full name for signature:');
-        if (name && name.trim() !== '') {
-          signaturePad.textContent = name.trim();
-          signatureInput.value = name.trim();
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.offsetWidth;
+            canvas.height = 150; // Altura fija para el área de firma
         }
-      });
 
-      const guardianSignaturePad = document.getElementById('guardianSignature');
-      const guardianSignatureInput = document.getElementById('guardianSignatureInput');
-      guardianSignaturePad.addEventListener('click', () => {
-        const name = prompt('Please type your full name for signature:');
-        if (name && name.trim() !== '') {
-          guardianSignaturePad.textContent = name.trim();
-          guardianSignatureInput.value = name.trim();
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('client-date').value = today;
+            document.getElementById('guardian-date').value = today;
+        });
+        window.addEventListener('resize', resizeCanvas);
+        
+        // --- FUNCIONALIDAD DE FIRMA DIGITAL ---
+        function getPos(event) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            if (event.touches && event.touches.length > 0) {
+                 return {
+                    x: (event.touches[0].clientX - rect.left) * scaleX,
+                    y: (event.touches[0].clientY - rect.top) * scaleY
+                };
+            }
+            return {
+                x: (event.clientX - rect.left) * scaleX,
+                y: (event.clientY - rect.top) * scaleY
+            };
         }
-      });
 
-      // Validation helpers
-      const setError = (elementId, message) => {
-        document.getElementById(elementId).textContent = message;
-      };
+        function startDrawing(e) {
+            e.preventDefault();
+            drawing = true;
+            const pos = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
 
-      const clearError = (elementId) => {
-        document.getElementById(elementId).textContent = '';
-      };
+        function draw(e) {
+            if (!drawing) return;
+            e.preventDefault();
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
 
-      const validateEmail = (email) => {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-      };
+        function stopDrawing(e) {
+            e.preventDefault();
+            drawing = false;
+        }
 
-      const validatePhone = (phone) => {
-        const re = /^[\d\s\-\+\(\)]{10,}$/;
-        return re.test(phone);
-      };
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
 
-      const validateForm = () => {
-        let isValid = true;
-
-        // Reset errors
-        ['clientName', 'authorization', 'signature', 'date', 'phone', 'email'].forEach(field => {
-          clearError(`${field}Error`);
+        document.getElementById('clear-signature').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
 
-        // Client Name
-        if (!document.getElementById('clientName').value.trim()) {
-          setError('clientNameError', 'Client/Model name is required.');
-          isValid = false;
+        // --- FUNCIONALIDAD DEL FORMULARIO ---
+        function updateNamePreview(name) {
+            document.getElementById('client-name-preview').textContent = name || '[Nombre del Cliente]';
         }
+        
+        // --- GENERADOR DE PDF ---
+        document.getElementById('generate-pdf-btn').addEventListener('click', function() {
+            const form = document.getElementById('image-release-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
 
-        // Authorization
-        if (!document.querySelector('input[name="authorization"]:checked')) {
-          setError('authorizationError', 'Please select an option.');
-          isValid = false;
-        }
+            const btn = this;
+            btn.textContent = 'Generando...';
+            btn.disabled = true;
 
-        // Signature
-        if (!signatureInput.value.trim()) {
-          setError('signatureError', 'Signature is required.');
-          isValid = false;
-        }
+            const content = document.getElementById('pdf-content');
+            
+            html2canvas(content, {
+                scale: 2, // Aumenta la resolución de la imagen
+                useCORS: true // Necesario si la imagen del logo es externa
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const pdfWidth = 210; // Ancho de A4 en mm
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = imgHeight / imgWidth;
+                const pdfHeight = (pdfWidth * ratio);
 
-        // Date
-        if (!document.getElementById('date').value) {
-          setError('dateError', 'Date is required.');
-          isValid = false;
-        }
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                
+                const clientName = document.getElementById('client-name').value || 'documento';
+                const filename = `Autorizacion_${clientName.replace(/ /g, '_')}.pdf`;
 
-        // Phone
-        const phone = document.getElementById('phone').value.trim();
-        if (!phone) {
-          setError('phoneError', 'Phone is required.');
-          isValid = false;
-        } else if (!validatePhone(phone)) {
-          setError('phoneError', 'Please enter a valid phone number.');
-          isValid = false;
-        }
+                pdf.save(filename);
 
-        // Email
-        const email = document.getElementById('email').value.trim();
-        if (!email) {
-          setError('emailError', 'Email is required.');
-          isValid = false;
-        } else if (!validateEmail(email)) {
-          setError('emailError', 'Please enter a valid email address.');
-          isValid = false;
-        }
+            }).finally(() => {
+                btn.textContent = 'Generar y Descargar PDF';
+                btn.disabled = false;
+            });
+        });
+    </script>
 
-        return isValid;
-      };
-
-      // Format data for message
-      const formatMessage = () => {
-        const data = {
-          clientName: document.getElementById('clientName').value.trim(),
-          authorization: document.querySelector('input[name="authorization"]:checked')?.value || '',
-          signature: signatureInput.value.trim(),
-          date: document.getElementById('date').value,
-          phone: document.getElementById('phone').value.trim(),
-          email: document.getElementById('email').value.trim(),
-          guardianName: document.getElementById('guardianName').value.trim(),
-          guardianSignature: guardianSignatureInput.value.trim(),
-          guardianDate: document.getElementById('guardianDate').value
-        };
-
-        let message = `*Image Use Authorization – StellaPhotography*\n\n`;
-        message += `Client/Model Name: ${data.clientName}\n`;
-        message += `Authorize Use of My Image: ${data.authorization}\n`;
-        message += `Signature: ${data.signature}\n`;
-        message += `Date: ${data.date}\n`;
-        message += `Phone: ${data.phone}\n`;
-        message += `Email: ${data.email}\n`;
-
-        if (data.guardianName || data.guardianSignature || data.guardianDate) {
-          message += `\n*If underage:*\n`;
-          if (data.guardianName) message += `Parent/Guardian Name: ${data.guardianName}\n`;
-          if (data.guardianSignature) message += `Parent/Guardian Signature: ${data.guardianSignature}\n`;
-          if (data.guardianDate) message += `Date: ${data.guardianDate}\n`;
-        }
-
-        return encodeURIComponent(message);
-      };
-
-      // Email handler
-      document.getElementById('sendEmail').addEventListener('click', () => {
-        if (!validateForm()) return;
-
-        const subject = encodeURIComponent('Image Use Authorization Form - StellaPhotography');
-        const body = formatMessage();
-        const mailtoLink = `mailto:jasmarystella@gmail.com?subject=${subject}&body=${body}`;
-        window.location.href = mailtoLink;
-      });
-
-      // WhatsApp handler
-      document.getElementById('sendWhatsApp').addEventListener('click', () => {
-        if (!validateForm()) return;
-
-        const message = formatMessage();
-        const whatsappLink = `https://wa.me/19392821166?text=${message}`;
-        window.open(whatsappLink, '_blank');
-      });
-    });
-  </script>
 </body>
 </html>
