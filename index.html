@@ -5,109 +5,248 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Autorización de Uso de Imagen</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        * {
             margin: 0;
-            padding: 15px;
-            background-color: #f0f2f5;
+            padding: 0;
+            box-sizing: border-box;
         }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            color: #333;
+        }
+        
         .container {
-            max-width: 600px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 420px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        
         .header {
+            background: linear-gradient(135deg, #8B5FBF 0%, #6A4C93 100%);
+            padding: 30px 20px;
             text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 25px;
+            color: white;
+            position: relative;
+            overflow: hidden;
         }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+        
+        @keyframes shimmer {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
+        }
+        
         .header img {
-            width: 120px;
-            height: 120px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
             margin-bottom: 15px;
             object-fit: cover;
-            border: 3px solid #eee;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
         }
+        
+        .header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .form-content {
+            padding: 25px 20px;
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
+        
         label {
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #333;
+            color: #4A5568;
+            font-size: 14px;
         }
+        
         input[type="text"],
         input[type="email"],
         input[type="tel"],
         input[type="date"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
+            padding: 16px;
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
             font-size: 16px;
+            transition: all 0.3s ease;
+            background: #F7FAFC;
         }
+        
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus {
+            outline: none;
+            border-color: #8B5FBF;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(139, 95, 191, 0.1);
+        }
+        
+        .authorization-text {
+            background: linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 100%);
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+            border-left: 4px solid #8B5FBF;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
         .signature-pad-container {
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            border: 2px dashed #CBD5E0;
+            border-radius: 16px;
             position: relative;
+            background: #F7FAFC;
+            transition: all 0.3s ease;
         }
+        
+        .signature-pad-container:hover {
+            border-color: #8B5FBF;
+            background: white;
+        }
+        
         canvas {
             width: 100%;
-            height: 150px;
+            height: 120px;
             display: block;
+            border-radius: 14px;
         }
-        .button-container {
-            text-align: center;
-            margin-top: 25px;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
+        
         .clear-signature-btn {
-            background-color: #6c757d;
-            padding: 6px 12px;
+            background: linear-gradient(135deg, #718096 0%, #4A5568 100%);
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
             font-size: 12px;
-            margin-top: 8px;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        
         .clear-signature-btn:hover {
-            background-color: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
-        #minor-section {
-            display: none;
-            border-top: 2px dashed #ccc;
-            padding-top: 20px;
-            margin-top: 20px;
-        }
+        
         .checkbox-group {
             display: flex;
             align-items: center;
-            background-color: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #FFF5F5 0%, #FED7D7 100%);
+            padding: 16px;
+            border-radius: 16px;
+            border: 2px solid #FEB2B2;
         }
-        .checkbox-group input {
+        
+        .checkbox-group input[type="checkbox"] {
             width: 20px;
             height: 20px;
             margin-right: 12px;
+            accent-color: #8B5FBF;
         }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #C53030;
+            font-weight: 600;
+        }
+        
+        #minor-section {
+            display: none;
+            background: linear-gradient(135deg, #F0FFF4 0%, #C6F6D5 100%);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            border: 2px solid #68D391;
+        }
+        
+        #minor-section h4 {
+            color: #2F855A;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #8B5FBF 0%, #6A4C93 100%);
+            color: white;
+            padding: 18px 32px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(139, 95, 191, 0.4);
+        }
+        
         .modal {
             display: none;
             position: fixed;
@@ -117,30 +256,133 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
         }
+        
         .modal-content {
-            background-color: #fefefe;
+            background: white;
             margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 90%;
-            max-width: 800px;
-            border-radius: 10px;
+            padding: 30px;
+            border-radius: 20px;
+            width: 95%;
+            max-width: 500px;
             text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
+        
         .modal-content iframe {
             width: 100%;
-            height: 500px;
-            border: 1px solid #ccc;
+            height: 400px;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            margin: 15px 0;
         }
+        
         .close-btn {
-            color: #aaa;
+            color: #718096;
             float: right;
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             cursor: pointer;
-            line-height: 1;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #4A5568;
+        }
+        
+        #whatsapp-share-btn {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        #whatsapp-share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
+        }
+        
+        /* Animaciones de entrada */
+        .container {
+            animation: slideUp 0.6s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-group {
+            animation: fadeIn 0.8s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+        .form-group:nth-child(7) { animation-delay: 0.7s; }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dynamic-name {
+            color: #8B5FBF;
+            font-weight: 700;
+            text-decoration: underline;
+            text-decoration-color: rgba(139, 95, 191, 0.3);
+            transition: all 0.3s ease;
+            min-width: 5px;
+            display: inline-block;
+        }
+        
+        .dynamic-name.filled {
+            background: linear-gradient(135deg, #8B5FBF 0%, #6A4C93 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                margin: 5px auto;
+                border-radius: 20px;
+            }
+            
+            .header {
+                padding: 25px 15px;
+            }
+            
+            .form-content {
+                padding: 20px 15px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -152,79 +394,81 @@
     <div class="header">
         <img id="company-logo" src="logo.jpg" alt="Logo de StellaPhotography">
         <h2>AUTORIZACIÓN DE USO DE IMAGEN</h2>
-        <p><strong>StellaPhotography - Las Piedras, PR</strong><br><br>Tel. 939-282-1166</p>
+        <p><strong>StellaPhotography - Las Piedras, PR</strong><br>Tel. 939-282-1166</p>
     </div>
 
-    <form id="authorization-form">
-        <div class="form-group">
-            <label for="name">Yo:</label>
-            <input type="text" id="name" name="name" placeholder="Escribe tu nombre completo" required>
-        </div>
-
-        <p>autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.</p>
-
-        <div class="form-group">
-            <label for="date">Fecha:</label>
-            <input type="date" id="date" name="date" required>
-        </div>
-
-        <div class="form-group">
-            <label for="signature">Firma del Cliente/Modelo:</label>
-            <div class="signature-pad-container">
-                <canvas id="signature-pad"></canvas>
-            </div>
-            <button type="button" class="clear-signature-btn" id="clear-signature">Limpiar Firma</button>
-        </div>
-
-        <div class="form-group">
-            <label for="phone">Teléfono:</label>
-            <input type="tel" id="phone" name="phone" placeholder="Ej: 787-123-4567">
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" placeholder="Ej: tu_correo@email.com">
-        </div>
-
-        <div class="form-group checkbox-group">
-            <input type="checkbox" id="is-minor">
-            <label for="is-minor">Es menor de edad (requiere firma de tutor)</label>
-        </div>
-
-        <!-- Sección para menores de edad -->
-        <div id="minor-section">
-            <h4>Firma del Padre/Madre/Tutor:</h4>
+    <div class="form-content">
+        <form id="authorization-form">
             <div class="form-group">
-                <label for="parent-name">Nombre del Padre/Madre/Tutor:</label>
-                <input type="text" id="parent-name" name="parent-name">
+                <label for="name">Nombre Completo</label>
+                <input type="text" id="name" name="name" placeholder="Escribe tu nombre completo" required>
             </div>
-            <div class="form-group">
-                <label for="parent-date">Fecha (Tutor):</label>
-                <input type="date" id="parent-date" name="parent-date">
+
+            <div class="authorization-text">
+                <strong>Yo</strong> <span id="dynamic-name" class="dynamic-name">Tu Nombre</span>, autorizo a <strong>StellaPhotography (Jasmary Stella)</strong> a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.
             </div>
+
             <div class="form-group">
-                <label for="parent-signature">Firma:</label>
+                <label for="date">Fecha</label>
+                <input type="date" id="date" name="date" required>
+            </div>
+
+            <div class="form-group">
+                <label for="signature">Firma del Cliente/Modelo</label>
                 <div class="signature-pad-container">
-                    <canvas id="parent-signature-pad"></canvas>
+                    <canvas id="signature-pad"></canvas>
                 </div>
-                <button type="button" class="clear-signature-btn" id="clear-parent-signature">Limpiar Firma</button>
+                <button type="button" class="clear-signature-btn" id="clear-signature">Limpiar Firma</button>
             </div>
-        </div>
 
-        <div class="button-container">
-            <button type="submit">Generar Formulario y Enviar</button>
-        </div>
-    </form>
+            <div class="form-group">
+                <label for="phone">Teléfono</label>
+                <input type="tel" id="phone" name="phone" placeholder="###-###-####">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo Electrónico</label>
+                <input type="email" id="email" name="email" placeholder="tu_correo@email.com">
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="is-minor">
+                <label for="is-minor">Es menor de edad (requiere firma de tutor)</label>
+            </div>
+
+            <!-- Sección para menores de edad -->
+            <div id="minor-section">
+                <h4>👨‍👩‍👧‍👦 Información del Tutor Legal</h4>
+                <div class="form-group">
+                    <label for="parent-name">Nombre del Padre/Madre/Tutor</label>
+                    <input type="text" id="parent-name" name="parent-name">
+                </div>
+                <div class="form-group">
+                    <label for="parent-date">Fecha (Tutor)</label>
+                    <input type="date" id="parent-date" name="parent-date">
+                </div>
+                <div class="form-group">
+                    <label for="parent-signature">Firma del Tutor</label>
+                    <div class="signature-pad-container">
+                        <canvas id="parent-signature-pad"></canvas>
+                    </div>
+                    <button type="button" class="clear-signature-btn" id="clear-parent-signature">Limpiar Firma</button>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Generar y Enviar Formulario</button>
+        </form>
+    </div>
 </div>
 
 <!-- Modal para la vista previa del PDF -->
 <div id="pdf-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
-        <h3>Vista Previa del Documento</h3>
+        <h3>📄 Vista Previa del Documento</h3>
         <iframe id="pdf-preview" frameborder="0"></iframe>
-        <p>El PDF se ha descargado. Haz clic abajo para compartirlo en WhatsApp.</p>
-        <button id="whatsapp-share-btn">Compartir en WhatsApp</button>
+        <p>El PDF se ha descargado correctamente. Puedes compartirlo directamente en WhatsApp.</p>
+        <button id="whatsapp-share-btn">📱 Compartir en WhatsApp</button>
     </div>
 </div>
 
@@ -250,6 +494,21 @@
         const parentSignaturePad = new SignaturePad(document.getElementById('parent-signature-pad'));
         document.getElementById('clear-signature').addEventListener('click', () => signaturePad.clear());
         document.getElementById('clear-parent-signature').addEventListener('click', () => parentSignaturePad.clear());
+        
+        // Actualizar el nombre dinámicamente en el texto de autorización
+        const nameInput = document.getElementById('name');
+        const dynamicNameSpan = document.getElementById('dynamic-name');
+        
+        nameInput.addEventListener('input', function() {
+            const name = this.value.trim();
+            if (name) {
+                dynamicNameSpan.textContent = name;
+                dynamicNameSpan.classList.add('filled');
+            } else {
+                dynamicNameSpan.textContent = '_________________';
+                dynamicNameSpan.classList.remove('filled');
+            }
+        });
         
         const isMinorCheckbox = document.getElementById('is-minor');
         const minorSection = document.getElementById('minor-section');
