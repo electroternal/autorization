@@ -102,16 +102,19 @@
         input[type="email"],
         input[type="tel"] {
             width: 100%;
-            padding: 20px;
+            padding: 16px;
+            margin-right: 8px;
             border: 2px solid #E2E8F0;
             border-radius: 16px;
             font-size: 16px;
             transition: all 0.3s ease;
             background: #F7FAFC;
         }
+
         input[type="date"] {
-            width: 33%;
-            padding: 20px;
+            width: 50%;
+            padding: 16px;
+            margin-right: 8px;
             border: 2px solid #E2E8F0;
             border-radius: 16px;
             font-size: 16px;
@@ -253,6 +256,13 @@
         .submit-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(139, 95, 191, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
         
         .modal {
@@ -412,6 +422,11 @@
                 <input type="text" id="name" name="name" placeholder="Escribe tu nombre completo" required>
             </div>
 
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="authorize-checkbox" required>
+                <label for="authorize-checkbox">¿Autorizas el uso de tus imágenes para publicación y promoción?</label>
+            </div>
+
             <div class="authorization-text">
                 <strong>Yo</strong> <span id="dynamic-name" class="dynamic-name">Tu Nombre</span>, autorizo a <strong>StellaPhotography (Jasmary Stella)</strong> a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.
             </div>
@@ -464,7 +479,7 @@
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn">Generar y Enviar Formulario</button>
+            <button type="submit" class="submit-btn" id="submit-btn">Generar y Enviar Formulario</button>
         </form>
     </div>
 </div>
@@ -525,6 +540,15 @@
             document.getElementById('parent-name').required = this.checked;
         });
 
+        const authorizeCheckbox = document.getElementById('authorize-checkbox');
+        const submitBtn = document.getElementById('submit-btn');
+
+        // Habilitar/deshabilitar el botón de submit basado en el checkbox de autorización
+        authorizeCheckbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+        });
+        submitBtn.disabled = !authorizeCheckbox.checked; // Inicial
+
         const modal = document.getElementById('pdf-modal');
         const closeBtn = document.querySelector('.close-btn');
         closeBtn.onclick = () => modal.style.display = "none";
@@ -534,6 +558,11 @@
 
         document.getElementById('authorization-form').addEventListener('submit', function (event) {
             event.preventDefault();
+            
+            if (!authorizeCheckbox.checked) {
+                alert("Debe autorizar el uso de sus imágenes para continuar.");
+                return;
+            }
             
             if (signaturePad.isEmpty()) {
                 alert("Por favor, provea la firma del cliente/modelo.");
@@ -565,36 +594,51 @@
             doc.text("StellaPhotography - Las Piedras, PR", 105, 70, { align: "center" });
             doc.text("Tel. 939-282-1166", 105, 80, { align: "center" });
 
-            // 3. Cuerpo del formulario (con coordenadas ajustadas)
+            // 3. Cuerpo del formulario (texto principal de autorización)
             const textLines = doc.splitTextToSize(`Yo, ${clientName}, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.`, 170);
-            doc.text(textLines, 20, 95);
+            let currentY = doc.lastAutoTable?.finalY || 95;
+            doc.text(textLines, 20, currentY);
+            //currentY += textLines.length * 7 + 10; // Ajuste para el siguiente texto
+            currentY += textLines.length * 7; // Ajuste para el siguiente texto
+
+            // 4. ARREGLADO: Añadir la confirmación de autorización con mejor formato
+            doc.setFontSize(12);
+            doc.text("¿Autorizas el uso de tus imágenes para publicación y promoción?", 20, currentY);
+            
+            // Añadir el checkmark visual
+            doc.setFont(undefined, 'bold');
+            doc.text("[X] SÍ   [  ] NO", 20, currentY + 10);
+            doc.setFont(undefined, 'normal');
+
+            // Ajustar currentY después de la pregunta y respuesta
+            currentY += 25;
 
             const dateValue = document.getElementById('date').value;
             const [year, month, day] = dateValue.split('-');
             const formattedDate = `${day}/${month}/${year}`;
-            doc.text(`Fecha: ${formattedDate}`, 20, 130);
+            doc.text(`Fecha: ${formattedDate}`, 20, currentY);
             
-            doc.text("Firma del Cliente/Modelo:", 20, 140);
+            doc.text("Firma del Cliente/Modelo:", 20, currentY + 10);
             const signatureImage = signaturePad.toDataURL();
-            doc.addImage(signatureImage, 'PNG', 20, 145, 60, 25);
+            doc.addImage(signatureImage, 'PNG', 20, currentY + 15, 60, 25);
             
-            doc.text(`Teléfono: ${document.getElementById('phone').value}`, 20, 180);
-            doc.text(`Email: ${document.getElementById('email').value}`, 20, 190);
+            doc.text(`Teléfono: ${document.getElementById('phone').value}`, 20, currentY + 50);
+            doc.text(`Email: ${document.getElementById('email').value}`, 20, currentY + 60);
 
             if (isMinorCheckbox.checked) {
                 doc.setLineDashPattern([2, 2], 0);
-                doc.line(20, 200, 190, 200);
-                doc.text("Firmado por Padre/Madre/Tutor por ser menor de edad:", 20, 210);
-                doc.text(`Nombre del Tutor: ${document.getElementById('parent-name').value}`, 20, 220);
+                doc.line(20, currentY + 70, 190, currentY + 70);
+                doc.text("Firmado por Padre/Madre/Tutor por ser menor de edad:", 20, currentY + 75);
+                doc.text(`Nombre del Tutor: ${document.getElementById('parent-name').value}`, 20, currentY + 85);
                 
                 const pDateValue = document.getElementById('parent-date').value;
                 const [pYear, pMonth, pDay] = pDateValue.split('-');
                 const pFormattedDate = `${pDay}/${pMonth}/${pYear}`;
-                doc.text(`Fecha (Tutor): ${pFormattedDate}`, 20, 230);
+                doc.text(`Fecha (Tutor): ${pFormattedDate}`, 20, currentY + 95);
 
-                doc.text("Firma del Tutor:", 20, 240);
+                doc.text("Firma del Tutor:", 20, currentY + 105);
                 const parentSignatureImage = parentSignaturePad.toDataURL();
-                doc.addImage(parentSignatureImage, 'PNG', 20, 245, 60, 25);
+                doc.addImage(parentSignatureImage, 'PNG', 20, currentY + 110, 60, 25);
             }
             
             // --- FIN: Construcción del PDF ---
