@@ -518,7 +518,6 @@
         document.getElementById('clear-signature').addEventListener('click', () => signaturePad.clear());
         document.getElementById('clear-parent-signature').addEventListener('click', () => parentSignaturePad.clear());
         
-        // Actualizar el nombre dinámicamente en el texto de autorización
         const nameInput = document.getElementById('name');
         const dynamicNameSpan = document.getElementById('dynamic-name');
         
@@ -528,7 +527,7 @@
                 dynamicNameSpan.textContent = name;
                 dynamicNameSpan.classList.add('filled');
             } else {
-                dynamicNameSpan.textContent = '_________________';
+                dynamicNameSpan.textContent = 'Tu Nombre';
                 dynamicNameSpan.classList.remove('filled');
             }
         });
@@ -537,17 +536,15 @@
         const minorSection = document.getElementById('minor-section');
         isMinorCheckbox.addEventListener('change', function() {
             minorSection.style.display = this.checked ? 'block' : 'none';
-            document.getElementById('parent-name').required = this.checked;
         });
 
         const authorizeCheckbox = document.getElementById('authorize-checkbox');
         const submitBtn = document.getElementById('submit-btn');
 
-        // Habilitar/deshabilitar el botón de submit basado en el checkbox de autorización
         authorizeCheckbox.addEventListener('change', function() {
             submitBtn.disabled = !this.checked;
         });
-        submitBtn.disabled = !authorizeCheckbox.checked; // Inicial
+        submitBtn.disabled = !authorizeCheckbox.checked;
 
         const modal = document.getElementById('pdf-modal');
         const closeBtn = document.querySelector('.close-btn');
@@ -559,8 +556,17 @@
         document.getElementById('authorization-form').addEventListener('submit', function (event) {
             event.preventDefault();
             
+            // --- INICIO: Lógica de Validación Mejorada ---
+            const clientName = document.getElementById('name').value.trim();
+            const parentName = document.getElementById('parent-name').value.trim();
+
             if (!authorizeCheckbox.checked) {
                 alert("Debe autorizar el uso de sus imágenes para continuar.");
+                return;
+            }
+
+            if (!clientName) {
+                alert("Por favor, ingrese su Nombre Completo.");
                 return;
             }
             
@@ -568,49 +574,50 @@
                 alert("Por favor, provea la firma del cliente/modelo.");
                 return;
             }
-            if (isMinorCheckbox.checked && parentSignaturePad.isEmpty()) {
-                alert("Por favor, provea la firma del padre/tutor.");
-                return;
+
+            if (isMinorCheckbox.checked) {
+                if (!parentName) {
+                    alert("Por favor, ingrese el nombre del padre/tutor.");
+                    return;
+                }
+                if (parentSignaturePad.isEmpty()) {
+                    alert("Por favor, provea la firma del padre/tutor.");
+                    return;
+                }
             }
+            // --- FIN: Lógica de Validación Mejorada ---
 
             const doc = new jsPDF();
-            const clientName = document.getElementById('name').value;
             
             // --- INICIO: Construcción del PDF ---
             
-            // 1. Añadir el logo desde Base64
             try {
-                // Parámetros: imagen, formato (se infiere de la cadena Base64), x, y, ancho, alto
-                doc.addImage(logoBase64, 'JPEG', 85, 10, 40, 40); // Cambia 'JPEG' a 'PNG' si es necesario
+                if (logoBase64) {
+                    doc.addImage(logoBase64, 'JPEG', 85, 10, 40, 40);
+                }
             } catch (error) {
                 console.error("No se pudo cargar el logo desde Base64 en el PDF.", error);
                 alert("Hubo un error al cargar el logo. Asegúrate de que el texto Base64 sea correcto.");
             }
 
-            // 2. Añadir el texto del encabezado (ajustado para estar debajo del logo)
             doc.setFontSize(16);
             doc.text("AUTORIZACIÓN DE USO DE IMAGEN", 105, 60, { align: "center" });
             doc.setFontSize(12);
             doc.text("StellaPhotography - Las Piedras, PR", 105, 70, { align: "center" });
             doc.text("Tel. 939-282-1166", 105, 80, { align: "center" });
 
-            // 3. Cuerpo del formulario (texto principal de autorización)
             const textLines = doc.splitTextToSize(`Yo, ${clientName}, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.`, 170);
-            let currentY = doc.lastAutoTable?.finalY || 95;
+            let currentY = 95;
             doc.text(textLines, 20, currentY);
-            //currentY += textLines.length * 7 + 10; // Ajuste para el siguiente texto
-            currentY += textLines.length * 7; // Ajuste para el siguiente texto
+            currentY += textLines.length * 7;
 
-            // 4. ARREGLADO: Añadir la confirmación de autorización con mejor formato
             doc.setFontSize(12);
             doc.text("¿Autorizas el uso de tus imágenes para publicación y promoción?", 20, currentY);
             
-            // Añadir el checkmark visual
             doc.setFont(undefined, 'bold');
             doc.text("[X] SÍ   [  ] NO", 20, currentY + 10);
             doc.setFont(undefined, 'normal');
 
-            // Ajustar currentY después de la pregunta y respuesta
             currentY += 25;
 
             const dateValue = document.getElementById('date').value;
@@ -647,15 +654,12 @@
             document.getElementById('pdf-preview').src = pdfDataUri;
             modal.style.display = 'block';
 
-            const fileName = `Autorizacion_${clientName.replace(/\s/g, '_')}.pdf`;
-            const downloadLink = document.createElement('a');
-            downloadLink.href = doc.output('bloburl'); 
-            downloadLink.download = fileName;
-            downloadLink.click();
+            const pdfFileName = `Autorizacion_${clientName.replace(/\s/g, '_')}.pdf`;
+            doc.save(pdfFileName);
 
-            const message = encodeURIComponent(`¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography. Por favor, adjunta el PDF que acabas de descargar.`);
+            const message = encodeURIComponent(`¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography, firmado por ${clientName}.`);
             document.getElementById('whatsapp-share-btn').onclick = function() {
-                window.open(`https://wa.me/?text=${message}`, '_blank');
+                window.open(`https://wa.me/19392821166?text=${message}`, '_blank');
             };
         });
     });
