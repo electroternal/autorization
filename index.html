@@ -46,7 +46,7 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(255,255,191,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
             animation: shimmer 3s ease-in-out infinite;
         }
         
@@ -484,13 +484,13 @@
     </div>
 </div>
 
-<!-- Modal para la vista previa del PDF (fallback si la nueva ventana falla) -->
-<div id="pdf-modal" class="modal">
+<!-- Modal (opcional, solo si se usa manualmente; no se muestra automáticamente) -->
+<div id="pdf-modal" class="modal" style="display: none;">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
         <h3>📄 Vista Previa del Documento</h3>
         <iframe id="pdf-preview" frameborder="0"></iframe>
-        <p>El PDF se ha descargado correctamente. Puedes compartirlo directamente en WhatsApp o desde la nueva ventana.</p>
+        <p>El PDF se ha descargado correctamente. Puedes compartirlo directamente en WhatsApp.</p>
         <button id="whatsapp-share-btn">📱 Compartir en WhatsApp</button>
     </div>
 </div>
@@ -551,7 +551,13 @@
         closeBtn.onclick = () => modal.style.display = "none";
         window.onclick = (event) => {
             if (event.target == modal) modal.style.display = "none";
-        }
+        };
+
+        // Configurar botón de WhatsApp (respaldo)
+        document.getElementById('whatsapp-share-btn').onclick = function() {
+            // Este se puede usar si el usuario abre el modal manualmente, pero no es necesario
+            window.open(`https://wa.me/19392821166`, '_blank');
+        };
 
         document.getElementById('authorization-form').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -597,7 +603,6 @@
                 }
             } catch (error) {
                 console.error("No se pudo cargar el logo desde Base64 en el PDF.", error);
-                // No alert aquí para no interrumpir; solo log
             }
 
             doc.setFontSize(16);
@@ -655,43 +660,14 @@
             // Descargar el PDF automáticamente
             doc.save(pdfFileName);
 
-            // Generar Blob y URL temporal para mejor compatibilidad (evita problemas con Data URI largos)
-            const pdfBlob = doc.output('blob');
-            const pdfUrl = URL.createObjectURL(pdfBlob);
+            // Abrir WhatsApp con mensaje prellenado que menciona el PDF descargado
+            // Instruye al usuario a adjuntarlo (paso manual necesario por limitaciones técnicas)
+            const message = `¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography, firmado por ${clientName}. 
+He descargado el archivo PDF: ${pdfFileName}. Por favor, adjúntalo aquí (en WhatsApp, usa el icono + > Documento > selecciona de Descargas o Archivos). 
+Detalles: Teléfono: ${document.getElementById('phone').value}, Email: ${document.getElementById('email').value}.`;
             
-            // Abrir nueva ventana/tabs con el PDF (debería mostrar el PDF correctamente ahora)
-            let pdfWindow = null;
-            try {
-                pdfWindow = window.open(pdfUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
-            } catch (error) {
-                console.error('Error al abrir ventana: ', error);
-            }
-            
-            // Configurar evento para compartir en WhatsApp (mensaje actualizado)
-            const message = encodeURIComponent(`¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography, firmado por ${clientName}. El archivo PDF ha sido generado y descargado.`);
-            document.getElementById('whatsapp-share-btn').onclick = function() {
-                window.open(`https://wa.me/19392821166?text=${message}`, '_blank');
-            };
-
-            // Fallback: Si la nueva ventana falla (ej. pop-ups bloqueados o error), usa el modal con iframe
-            setTimeout(() => {
-                let useModal = false;
-                if (!pdfWindow || pdfWindow.closed || pdfWindow.document === null || pdfWindow.document.URL === 'about:blank') {
-                    useModal = true;
-                }
-                
-                if (useModal) {
-                    document.getElementById('pdf-preview').src = pdfUrl;
-                    modal.style.display = 'block';
-                } else {
-                    // Limpiar la URL temporal después de un tiempo (libera memoria)
-                    setTimeout(() => {
-                        URL.revokeObjectURL(pdfUrl);
-                    }, 30000); // 30 segundos después de abrir
-                }
-            }, 1000);
-
-            alert(`¡PDF generado y descargado exitosamente! Se abrió una nueva ventana para vista previa. Si ves una página en blanco, verifica que los pop-ups estén permitidos en tu navegador. Desde la vista del PDF, puedes compartirlo (tap > Share en iPhone).`);
+            // Abrir WhatsApp directamente en nueva pestaña/ventana
+            window.open(`https://wa.me/19392821166?text=${encodeURIComponent(message)}`, '_blank');
         });
     });
 </script>
