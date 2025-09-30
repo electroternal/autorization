@@ -484,22 +484,19 @@
     </div>
 </div>
 
-<!-- Modal para la vista previa del PDF -->
+<!-- Modal de Confirmación -->
 <div id="pdf-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
-        <h3>📄 Vista Previa del Documento</h3>
-        <p>Aquí tienes una vista previa. Descarga el documento y luego compártelo por WhatsApp.</p>
-        <iframe id="pdf-preview" frameborder="0"></iframe>
-        
-        <!-- ▼▼▼ BOTONES MODIFICADOS ▼▼▼ -->
-        <a id="download-pdf-btn" class="submit-btn" style="text-decoration: none; margin-bottom: 10px; display: block; background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%);">
-            📥 Descargar PDF
-        </a>
-        <button id="whatsapp-share-btn">
-            📱 Compartir en WhatsApp
+        <h3 style="font-size: 24px;">📄 ¡Listo!</h3>
+        <p style="margin-top: 15px; font-size: 16px;">
+            El documento se ha abierto en una nueva pestaña del navegador.
+            <br><br>
+            Desde esa nueva pestaña, puedes usar el botón de <strong>Compartir</strong> de tu teléfono para enviarlo directamente por WhatsApp.
+        </p>
+        <button id="whatsapp-start-chat-btn">
+            📱 Iniciar Chat en WhatsApp
         </button>
-        <!-- ▲▲▲ FIN DE BOTONES MODIFICADOS ▲▲▲ -->
     </div>
 </div>
 
@@ -560,9 +557,6 @@
         window.onclick = (event) => {
             if (event.target == modal) modal.style.display = "none";
         }
-
-        // Variable para almacenar la URL del PDF generado
-        let currentPdfUrl = null;
 
         document.getElementById('authorization-form').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -657,34 +651,22 @@
             
             // --- INICIO DE LA LÓGICA MODIFICADA ---
 
-            // 1. Genera el PDF como un 'blob'
+            // 1. Genera el PDF como un 'blob' y crea una URL local para él.
             const pdfBlob = doc.output('blob');
-            
-            // 2. Limpia la URL anterior si existe para liberar memoria
-            if (currentPdfUrl) {
-                URL.revokeObjectURL(currentPdfUrl);
-            }
+            const pdfUrl = URL.createObjectURL(pdfBlob);
 
-            // 3. Crea una URL local y segura para el blob
-            currentPdfUrl = URL.createObjectURL(pdfBlob);
+            // 2. ABRIR EL PDF EN UNA NUEVA PESTAÑA.
+            // Esta es la forma más compatible de mostrar un PDF generado en el navegador.
+            window.open(pdfUrl, '_blank');
 
-            // 4. Muestra la vista previa en el iframe
-            document.getElementById('pdf-preview').src = currentPdfUrl;
+            // 3. Muestra el modal de confirmación.
             modal.style.display = 'block';
 
-            // 5. Configura el botón de descarga
-            const pdfFileName = `Autorizacion_${clientName.replace(/\s/g, '_')}.pdf`;
-            const downloadBtn = document.getElementById('download-pdf-btn');
-            downloadBtn.href = currentPdfUrl;
-            downloadBtn.download = pdfFileName;
-
-            // 6. Configura el botón de WhatsApp con un mensaje apropiado
-            const message = encodeURIComponent(`¡Hola! Acabo de completar y descargar el formulario de autorización de imagen para StellaPhotography, firmado por ${clientName}. Te adjunto el archivo en este chat.`);
-            document.getElementById('whatsapp-share-btn').onclick = function() {
+            // 4. Configura el botón para iniciar el chat en WhatsApp.
+            const message = encodeURIComponent(`¡Hola! Acabo de generar el formulario de autorización de imagen de StellaPhotography firmado por ${clientName}. Te lo enviaré en un momento.`);
+            document.getElementById('whatsapp-start-chat-btn').onclick = function() {
                 window.open(`https://wa.me/19392821166?text=${message}`, '_blank');
             };
-
-            // Se elimina la descarga automática: doc.save(pdfFileName);
             
             // --- FIN DE LA LÓGICA MODIFICADA ---
         });
