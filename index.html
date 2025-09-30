@@ -190,6 +190,39 @@
             border-radius: 16px;
             border: 2px solid #FEB2B2;
         }
+
+        .radio-group-container {
+            background: linear-gradient(135deg, #ebf8ff 0%, #e6fffa 100%);
+            padding: 16px;
+            border-radius: 16px;
+            border: 2px solid #a0deeb;
+        }
+        
+        .radio-group {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            accent-color: #8B5FBF;
+        }
+
+        .radio-option label {
+            margin-bottom: 0;
+            font-size: 16px;
+            color: #2c5282;
+            font-weight: 600;
+        }
         
         .checkbox-group input[type="checkbox"] {
             width: 20px;
@@ -328,7 +361,6 @@
             box-shadow: 0 8px 20px rgba(37, 211, 102, 0.4);
         }
         
-        /* Animaciones de entrada */
         .container {
             animation: slideUp 0.6s ease-out;
         }
@@ -422,14 +454,26 @@
                 <input type="text" id="name" name="name" placeholder="Escribe tu nombre completo" required>
             </div>
 
-            <div class="form-group checkbox-group">
-                <input type="checkbox" id="authorize-checkbox" required>
-                <label for="authorize-checkbox">¿Autorizas el uso de tus imágenes para publicación y promoción?</label>
+            <div class="form-group radio-group-container">
+                <label>¿Autorizas el uso de tus imágenes para publicación y promoción?</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="authorize-yes" name="image-authorization" value="yes" required>
+                        <label for="authorize-yes">SÍ</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="authorize-no" name="image-authorization" value="no" required>
+                        <label for="authorize-no">NO</label>
+                    </div>
+                </div>
             </div>
 
+            <!-- ▼▼▼ SECCIÓN MODIFICADA ▼▼▼ -->
+            <!-- El 'span' con id="authorization-verb" se actualizará dinámicamente -->
             <div class="authorization-text">
-                <strong>Yo</strong> <span id="dynamic-name" class="dynamic-name">Tu Nombre</span>, autorizo a <strong>StellaPhotography (Jasmary Stella)</strong> a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.
+                <strong>Yo</strong> <span id="dynamic-name" class="dynamic-name">Tu Nombre</span>, <span id="authorization-verb">autorizo</span> a <strong>StellaPhotography (Jasmary Stella)</strong> a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.
             </div>
+            <!-- ▲▲▲ FIN DE SECCIÓN MODIFICADA ▲▲▲ -->
 
             <div class="form-group">
                 <label for="date">Fecha</label>
@@ -459,7 +503,6 @@
                 <label for="is-minor">Es menor de edad (requiere firma de tutor)</label>
             </div>
 
-            <!-- Sección para menores de edad -->
             <div id="minor-section">
                 <h4>👨‍👩‍👧‍👦 Información del Tutor Legal</h4>
                 <div class="form-group">
@@ -484,7 +527,6 @@
     </div>
 </div>
 
-<!-- Modal de Confirmación -->
 <div id="pdf-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
@@ -502,15 +544,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
-        // ▼▼▼                                                                     ▼▼▼
-        // ▼▼▼      Pega aquí tu texto Base64 completo, reemplazando el texto.     ▼▼▼
-        // ▼▼▼                                                                     ▼▼▼
         const logoBase64 = "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";
-        // ▲▲▲                                                                     ▲▲▲
-        // ▲▲▲      Ej: "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQ..."             ▲▲▲
-        // ▲▲▲                                                                     ▲▲▲
-        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
 
         const { jsPDF } = window.jspdf;
 
@@ -543,13 +577,25 @@
             minorSection.style.display = this.checked ? 'block' : 'none';
         });
 
-        const authorizeCheckbox = document.getElementById('authorize-checkbox');
         const submitBtn = document.getElementById('submit-btn');
+        const authorizationRadios = document.querySelectorAll('input[name="image-authorization"]');
+        const verbSpan = document.getElementById('authorization-verb');
+        
+        submitBtn.disabled = true;
 
-        authorizeCheckbox.addEventListener('change', function() {
-            submitBtn.disabled = !this.checked;
+        authorizationRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                submitBtn.disabled = false;
+                
+                // ▼▼▼ LÓGICA AÑADIDA PARA CAMBIAR EL TEXTO DEL FORMULARIO ▼▼▼
+                if (this.value === 'yes') {
+                    verbSpan.innerHTML = 'autorizo';
+                } else {
+                    verbSpan.innerHTML = '<span style="color: #C53030; font-weight: 700;">NO</span> autorizo';
+                }
+                // ▲▲▲ FIN DE LÓGICA AÑADIDA ▲▲▲
+            });
         });
-        submitBtn.disabled = !authorizeCheckbox.checked;
 
         const modal = document.getElementById('pdf-modal');
         const closeBtn = document.querySelector('.close-btn');
@@ -563,9 +609,10 @@
             
             const clientName = document.getElementById('name').value.trim();
             const parentName = document.getElementById('parent-name').value.trim();
+            const authorizationChoice = document.querySelector('input[name="image-authorization"]:checked');
 
-            if (!authorizeCheckbox.checked) {
-                alert("Debe autorizar el uso de sus imágenes para continuar.");
+            if (!authorizationChoice) {
+                alert("Debe seleccionar si autoriza o no el uso de sus imágenes para continuar.");
                 return;
             }
 
@@ -606,19 +653,36 @@
             doc.setFontSize(12);
             doc.text("StellaPhotography - Las Piedras, PR", 105, 70, { align: "center" });
             doc.text("Tel. 939-282-1166", 105, 80, { align: "center" });
+            
+            // ▼▼▼ LÓGICA MODIFICADA PARA CREAR EL TEXTO DEL PDF ▼▼▼
+            let authorizationStatement = '';
+            const baseText = `a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.`;
 
-            const textLines = doc.splitTextToSize(`Yo, ${clientName}, autorizo a StellaPhotography (Jasmary Stella) a utilizar las fotografías y/o videos en los que aparezco para su publicación en sus redes sociales oficiales (Instagram, Facebook y TikTok) y para la promoción de sus servicios fotográficos.`, 170);
+            if (authorizationChoice.value === 'yes') {
+                authorizationStatement = `Yo, ${clientName}, autorizo ${baseText}`;
+            } else {
+                authorizationStatement = `Yo, ${clientName}, NO autorizo ${baseText}`;
+            }
+            
+            const textLines = doc.splitTextToSize(authorizationStatement, 170);
             let currentY = 95;
             doc.text(textLines, 20, currentY);
+            // ▲▲▲ FIN DE LÓGICA MODIFICADA ▲▲▲
+
             currentY += textLines.length * 7;
 
             doc.setFontSize(12);
             doc.text("¿Autorizas el uso de tus imágenes para publicación y promoción?", 20, currentY);
             
             doc.setFont(undefined, 'bold');
-            doc.text("[X] SÍ   [  ] NO", 20, currentY + 10);
-            doc.setFont(undefined, 'normal');
+            
+            if (authorizationChoice.value === 'yes') {
+                doc.text("[X] SÍ   [  ] NO", 20, currentY + 10);
+            } else {
+                doc.text("[  ] SÍ   [X] NO", 20, currentY + 10);
+            }
 
+            doc.setFont(undefined, 'normal');
             currentY += 25;
 
             const dateValue = document.getElementById('date').value;
@@ -649,26 +713,16 @@
                 doc.addImage(parentSignatureImage, 'PNG', 20, currentY + 110, 60, 25);
             }
             
-            // --- INICIO DE LA LÓGICA MODIFICADA ---
-
-            // 1. Genera el PDF como un 'blob' y crea una URL local para él.
             const pdfBlob = doc.output('blob');
             const pdfUrl = URL.createObjectURL(pdfBlob);
 
-            // 2. ABRIR EL PDF EN UNA NUEVA PESTAÑA.
-            // Esta es la forma más compatible de mostrar un PDF generado en el navegador.
             window.open(pdfUrl, '_blank');
-
-            // 3. Muestra el modal de confirmación.
             modal.style.display = 'block';
 
-            // 4. Configura el botón para iniciar el chat en WhatsApp.
             const message = encodeURIComponent(`¡Hola! Acabo de generar el formulario de autorización de imagen de StellaPhotography firmado por ${clientName}. Te lo enviaré en un momento.`);
             document.getElementById('whatsapp-start-chat-btn').onclick = function() {
                 window.open(`https://wa.me/19392821166?text=${message}`, '_blank');
             };
-            
-            // --- FIN DE LA LÓGICA MODIFICADA ---
         });
     });
 </script>
