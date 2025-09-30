@@ -484,14 +484,22 @@
     </div>
 </div>
 
-<!-- Modal (opcional, solo si se usa manualmente; no se muestra automáticamente) -->
-<div id="pdf-modal" class="modal" style="display: none;">
+<!-- Modal para la vista previa del PDF -->
+<div id="pdf-modal" class="modal">
     <div class="modal-content">
         <span class="close-btn">&times;</span>
         <h3>📄 Vista Previa del Documento</h3>
+        <p>Aquí tienes una vista previa. Descarga el documento y luego compártelo por WhatsApp.</p>
         <iframe id="pdf-preview" frameborder="0"></iframe>
-        <p>El PDF se ha descargado correctamente. Puedes compartirlo directamente en WhatsApp.</p>
-        <button id="whatsapp-share-btn">📱 Compartir en WhatsApp</button>
+        
+        <!-- ▼▼▼ BOTONES MODIFICADOS ▼▼▼ -->
+        <a id="download-pdf-btn" class="submit-btn" style="text-decoration: none; margin-bottom: 10px; display: block; background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%);">
+            📥 Descargar PDF
+        </a>
+        <button id="whatsapp-share-btn">
+            📱 Compartir en WhatsApp
+        </button>
+        <!-- ▲▲▲ FIN DE BOTONES MODIFICADOS ▲▲▲ -->
     </div>
 </div>
 
@@ -551,18 +559,14 @@
         closeBtn.onclick = () => modal.style.display = "none";
         window.onclick = (event) => {
             if (event.target == modal) modal.style.display = "none";
-        };
+        }
 
-        // Configurar botón de WhatsApp (respaldo)
-        document.getElementById('whatsapp-share-btn').onclick = function() {
-            // Este se puede usar si el usuario abre el modal manualmente, pero no es necesario
-            window.open(`https://wa.me/19392821166`, '_blank');
-        };
+        // Variable para almacenar la URL del PDF generado
+        let currentPdfUrl = null;
 
         document.getElementById('authorization-form').addEventListener('submit', function (event) {
             event.preventDefault();
             
-            // --- INICIO: Lógica de Validación Mejorada ---
             const clientName = document.getElementById('name').value.trim();
             const parentName = document.getElementById('parent-name').value.trim();
 
@@ -591,11 +595,8 @@
                     return;
                 }
             }
-            // --- FIN: Lógica de Validación Mejorada ---
 
             const doc = new jsPDF();
-            
-            // --- INICIO: Construcción del PDF ---
             
             try {
                 if (logoBase64) {
@@ -603,6 +604,7 @@
                 }
             } catch (error) {
                 console.error("No se pudo cargar el logo desde Base64 en el PDF.", error);
+                alert("Hubo un error al cargar el logo. Asegúrate de que el texto Base64 sea correcto.");
             }
 
             doc.setFontSize(16);
@@ -653,21 +655,38 @@
                 doc.addImage(parentSignatureImage, 'PNG', 20, currentY + 110, 60, 25);
             }
             
-            // --- FIN: Construcción del PDF ---
+            // --- INICIO DE LA LÓGICA MODIFICADA ---
 
+            // 1. Genera el PDF como un 'blob'
+            const pdfBlob = doc.output('blob');
+            
+            // 2. Limpia la URL anterior si existe para liberar memoria
+            if (currentPdfUrl) {
+                URL.revokeObjectURL(currentPdfUrl);
+            }
+
+            // 3. Crea una URL local y segura para el blob
+            currentPdfUrl = URL.createObjectURL(pdfBlob);
+
+            // 4. Muestra la vista previa en el iframe
+            document.getElementById('pdf-preview').src = currentPdfUrl;
+            modal.style.display = 'block';
+
+            // 5. Configura el botón de descarga
             const pdfFileName = `Autorizacion_${clientName.replace(/\s/g, '_')}.pdf`;
-            
-            // Descargar el PDF automáticamente
-            doc.save(pdfFileName);
+            const downloadBtn = document.getElementById('download-pdf-btn');
+            downloadBtn.href = currentPdfUrl;
+            downloadBtn.download = pdfFileName;
 
-            // Abrir WhatsApp con mensaje prellenado que menciona el PDF descargado
-            // Instruye al usuario a adjuntarlo (paso manual necesario por limitaciones técnicas)
-            const message = `¡Hola! Te envío el formulario de autorización de uso de imagen para StellaPhotography, firmado por ${clientName}. 
-He descargado el archivo PDF: ${pdfFileName}. Por favor, adjúntalo aquí (en WhatsApp, usa el icono + > Documento > selecciona de Descargas o Archivos). 
-Detalles: Teléfono: ${document.getElementById('phone').value}, Email: ${document.getElementById('email').value}.`;
+            // 6. Configura el botón de WhatsApp con un mensaje apropiado
+            const message = encodeURIComponent(`¡Hola! Acabo de completar y descargar el formulario de autorización de imagen para StellaPhotography, firmado por ${clientName}. Te adjunto el archivo en este chat.`);
+            document.getElementById('whatsapp-share-btn').onclick = function() {
+                window.open(`https://wa.me/19392821166?text=${message}`, '_blank');
+            };
+
+            // Se elimina la descarga automática: doc.save(pdfFileName);
             
-            // Abrir WhatsApp directamente en nueva pestaña/ventana
-            window.open(`https://wa.me/19392821166?text=${encodeURIComponent(message)}`, '_blank');
+            // --- FIN DE LA LÓGICA MODIFICADA ---
         });
     });
 </script>
